@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Kinetic — Adaptive Bodyweight Training</title>
+<meta name="theme-color" content="#101314">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kinetic">
+<meta name="description" content="Time-based bodyweight and equipment-optional training. Any age, any level, any equipment.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"></noscript>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23101314'/%3E%3Cpath d='M30 20 L30 80 M30 50 L70 20 M30 50 L70 80' stroke='%23ff7a45' stroke-width='9' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#101314; --surface:#181c1d; --surface-2:#1f2528; --surface-3:#293134;
+    --border:#2a3234; --text:#ecefea; --text-dim:#98a29f; --text-faint:#5f6a67;
+    --ember:#ff7a45; --ember-dim:#3a2419; --sage:#8fc9a9; --sage-dim:#1f2b25;
+    --gold:#e8b94e; --gold-dim:#382d1a; --danger:#e2584f;
+    --r-sm:10px; --r-md:16px; --r-lg:24px; --r-full:999px;
+    --ff-display:'Big Shoulders Display',system-ui,sans-serif;
+    --ff-body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    --ff-mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+    --safe-top:env(safe-area-inset-top,0px);
+    --safe-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:var(--bg); color:var(--text); font-family:var(--ff-body);
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    padding-bottom:calc(74px + var(--safe-bottom));
+  }
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important;}}
+  ::selection{background:var(--ember);color:#101314;}
+  a,button{font-family:inherit;color:inherit;}
+  button{cursor:pointer;}
+  h1,h2,h3{font-family:var(--ff-display);font-weight:700;letter-spacing:.01em;margin:0;}
+  .mono{font-family:var(--ff-mono);}
+  .hidden{display:none !important;}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:20;background:rgba(16,19,20,.88);backdrop-filter:blur(10px);
+    padding:calc(16px + var(--safe-top)) 20px 14px;display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--border);
+  }
+  .wordmark{display:flex;align-items:center;gap:10px;}
+  .wordmark svg{width:26px;height:26px;flex:none;}
+  .wordmark span{font-family:var(--ff-display);font-size:22px;font-weight:800;letter-spacing:.02em;}
+  .streak-pill{
+    display:flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--border);
+    padding:6px 12px 6px 10px;border-radius:var(--r-full);font-family:var(--ff-mono);font-size:13px;font-weight:700;color:var(--gold);
+  }
+  .icon-btn{
+    width:38px;height:38px;border-radius:var(--r-full);background:var(--surface-2);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;color:var(--text-dim);
+  }
+  .icon-btn svg{width:18px;height:18px;}
+
+  /* ---------- Layout ---------- */
+  .view{padding:20px 20px 40px;max-width:640px;margin:0 auto;}
+  .view-head{margin-bottom:18px;}
+  .eyebrow{font-family:var(--ff-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ember);font-weight:700;}
+  .view-head h1{font-size:34px;line-height:1.05;margin-top:6px;}
+  .view-sub{color:var(--text-dim);font-size:14px;margin-top:6px;line-height:1.5;}
+
+  /* ---------- Today hero ---------- */
+  .hero-card{
+    background:linear-gradient(160deg,var(--surface-2),var(--surface));
+    border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;position:relative;overflow:hidden;
+  }
+  .hero-card::before{
+    content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;
+    background:radial-gradient(circle,var(--ember-dim) 0%,transparent 70%);pointer-events:none;
+  }
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;position:relative;}
+  .hero-day{font-family:var(--ff-mono);font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em;}
+  .hero-title{font-size:30px;margin-top:4px;line-height:1.08;}
+  .hero-meta{display:flex;gap:14px;margin-top:12px;flex-wrap:wrap;}
+  .hero-meta .chip{
+    font-family:var(--ff-mono);font-size:12px;font-weight:700;color:var(--text-dim);
+    background:var(--surface-3);border-radius:var(--r-full);padding:5px 11px;
+  }
+  .ring-mini{width:56px;height:56px;border-radius:50%;position:relative;flex:none;}
+  .ring-mini .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--ff-mono);font-weight:700;font-size:13px;}
+  .hero-actions{display:flex;gap:10px;margin-top:20px;}
+  .btn{
+    border:none;border-radius:var(--r-md);padding:14px 20px;font-weight:700;font-size:15px;
+    display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s ease,opacity .12s ease;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn-primary{background:var(--ember);color:#1a0f08;flex:1;}
+  .btn-primary svg{width:18px;height:18px;}
+  .btn-ghost{background:var(--surface-3);color:var(--text);border:1px solid var(--border);}
+  .btn-block{width:100%;}
+  .btn-sm{padding:9px 14px;font-size:13px;border-radius:var(--r-sm);}
+  .btn:disabled{opacity:.4;pointer-events:none;}
+
+  .section{margin-top:28px;}
+  .section-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;}
+  .section-head h3{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);font-family:var(--ff-body);font-weight:700;}
+  .link-btn{font-size:13px;color:var(--ember);font-weight:600;background:none;border:none;}
+
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;text-align:center;}
+  .stat-box .val{font-family:var(--ff-mono);font-size:24px;font-weight:700;color:var(--sage);}
+  .stat-box .lbl{font-size:11px;color:var(--text-dim);margin-top:2px;text-transform:uppercase;letter-spacing:.06em;}
+
+  /* ---------- Cards: blueprint / exercise ---------- */
+  .card-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;margin:0 -20px;padding-left:20px;padding-right:20px;scroll-snap-type:x proximity;}
+  .card-row::-webkit-scrollbar{display:none;}
+  .bp-card{
+    flex:none;width:168px;scroll-snap-align:start;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--r-md);padding:16px;display:flex;flex-direction:column;gap:10px;
+  }
+  .bp-card .tag{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;}
+  .bp-card .tag svg{width:16px;height:16px;}
+  .bp-card h4{font-family:var(--ff-body);font-size:14px;font-weight:700;line-height:1.25;}
+  .bp-card .desc{font-size:12px;color:var(--text-dim);line-height:1.4;flex:1;}
+  .bp-card .foot{font-family:var(--ff-mono);font-size:11px;color:var(--text-faint);}
+
+  .grid-list{display:flex;flex-direction:column;gap:8px;}
+  .ex-row{
+    display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--r-md);padding:12px 14px;text-align:left;width:100%;
+  }
+  .ex-dot{width:8px;height:8px;border-radius:50%;flex:none;}
+  .ex-row .body{flex:1;min-width:0;}
+  .ex-row .name{font-size:14px;font-weight:600;}
+  .ex-row .meta{font-size:11.5px;color:var(--text-dim);margin-top:2px;}
+  .ex-row .secs{font-family:var(--ff-mono);font-size:13px;color:var(--text-dim);flex:none;}
+  .lvl-badge{font-family:var(--ff-mono);font-size:10px;font-weight:700;padding:2px 7px;border-radius:var(--r-full);text-transform:uppercase;letter-spacing:.04em;}
+  .lvl-beginner{background:var(--sage-dim);color:var(--sage);}
+  .lvl-moderate{background:var(--gold-dim);color:var(--gold);}
+  .lvl-advanced{background:var(--ember-dim);color:var(--ember);}
+
+  /* ---------- Filter chips ---------- */
+  .chip-scroll{display:flex;gap:8px;overflow-x:auto;margin:0 -20px 16px;padding:0 20px 4px;}
+  .chip-scroll::-webkit-scrollbar{display:none;}
+  .fchip{
+    flex:none;font-size:13px;font-weight:600;padding:8px 14px;border-radius:var(--r-full);
+    background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);
+  }
+  .fchip.active{background:var(--ember);border-color:var(--ember);color:#1a0f08;}
+  .search-wrap{position:relative;margin-bottom:14px;}
+  .search-wrap input{
+    width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);
+    padding:13px 14px 13px 42px;color:var(--text);font-size:15px;font-family:inherit;
+  }
+  .search-wrap input:focus{outline:2px solid var(--ember);outline-offset:1px;}
+  .search-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--text-faint);}
+
+  /* ---------- Plan (week) ---------- */
+  .week-list{display:flex;flex-direction:column;gap:10px;}
+  .day-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px;
+    display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+  }
+  .day-card.is-today{border-color:var(--ember);}
+  .day-card.is-done{opacity:.55;}
+  .day-mark{width:44px;height:44px;border-radius:var(--r-sm);display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none;background:var(--surface-2);}
+  .day-mark .d{font-family:var(--ff-mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;}
+  .day-mark .n{font-family:var(--ff-display);font-size:17px;font-weight:700;}
+  .day-body{flex:1;min-width:0;}
+  .day-body .t{font-size:14.5px;font-weight:700;}
+  .day-body .s{font-size:12px;color:var(--text-dim);margin-top:2px;}
+  .done-check{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);flex:none;display:flex;align-items:center;justify-content:center;}
+  .done-check.checked{background:var(--sage);border-color:var(--sage);}
+  .done-check svg{width:14px;height:14px;color:#0e1a15;}
+
+  /* ---------- Progress ---------- */
+  .heat-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px;}
+  .heat-cell{aspect-ratio:1;border-radius:5px;background:var(--surface-2);}
+  .heat-cell[data-lvl="1"]{background:var(--sage-dim);}
+  .heat-cell[data-lvl="2"]{background:#2e5d47;}
+  .heat-cell[data-lvl="3"]{background:var(--sage);}
+  .heat-legend{display:flex;align-items:center;gap:6px;justify-content:flex-end;margin-top:8px;font-size:11px;color:var(--text-faint);}
+  .heat-legend .heat-cell{width:11px;height:11px;flex:none;aspect-ratio:auto;}
+  .hist-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);}
+  .hist-item:last-child{border-bottom:none;}
+  .hist-item .t{font-size:14px;font-weight:600;}
+  .hist-item .d{font-size:11.5px;color:var(--text-dim);margin-top:2px;}
+  .hist-item .m{font-family:var(--ff-mono);font-size:12px;color:var(--sage);text-align:right;}
+  .empty-state{text-align:center;padding:34px 20px;color:var(--text-dim);font-size:13.5px;line-height:1.6;}
+  .empty-state svg{width:34px;height:34px;color:var(--text-faint);margin-bottom:10px;}
+  .heat-cell{cursor:pointer;}
+  .hist-item{cursor:pointer;}
+  .hd-session{background:var(--surface-2);border-radius:var(--r-md);padding:14px 16px;margin-bottom:12px;}
+  .hd-session .hd-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+  .hd-session .hd-head .t{font-weight:700;font-size:15px;}
+  .hd-session .hd-head .m{font-family:var(--ff-mono);font-size:12px;color:var(--sage);}
+  .hd-group{margin-top:10px;}
+  .hd-group .hd-group-label{font-family:var(--ff-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);font-weight:700;margin-bottom:6px;}
+  .hd-chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .hd-chip{font-size:12px;background:var(--surface-3);border-radius:var(--r-full);padding:5px 11px;color:var(--text);}
+  .hd-chip.warmup{color:var(--gold);}
+  .hd-chip.cooldown{color:var(--sage);}
+
+  /* ---------- Bottom nav ---------- */
+  .bottomnav{
+    position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(16,19,20,.92);backdrop-filter:blur(14px);
+    border-top:1px solid var(--border);display:flex;padding:8px 6px calc(8px + var(--safe-bottom));
+  }
+  .navbtn{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;
+    padding:6px 2px;color:var(--text-faint);font-size:10.5px;font-weight:700;letter-spacing:.02em;
+  }
+  .navbtn svg{width:21px;height:21px;}
+  .navbtn.active{color:var(--ember);}
+
+  /* ---------- Modal / sheet ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(6,8,8,.72);z-index:50;display:flex;align-items:flex-end;
+    opacity:0;pointer-events:none;transition:opacity .2s ease;
+  }
+  .overlay.show{opacity:1;pointer-events:auto;}
+  .sheet{
+    background:var(--surface);border-radius:var(--r-lg) var(--r-lg) 0 0;border:1px solid var(--border);border-bottom:none;
+    width:100%;max-width:640px;margin:0 auto;max-height:88vh;overflow-y:auto;padding:10px 20px calc(24px + var(--safe-bottom));
+    transform:translateY(16px);transition:transform .22s cubic-bezier(.2,.8,.2,1);
+  }
+  .overlay.show .sheet{transform:translateY(0);}
+  .sheet-handle{width:38px;height:4px;background:var(--border);border-radius:var(--r-full);margin:6px auto 16px;}
+  .sheet h2{font-size:24px;margin-bottom:4px;}
+  .sheet .close-x{position:absolute;top:14px;right:16px;}
+  .field-label{font-size:12px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 9px;}
+  .field-label:first-of-type{margin-top:14px;}
+  .opt-grid{display:flex;flex-wrap:wrap;gap:8px;}
+  .opt-chip{
+    padding:10px 15px;border-radius:var(--r-md);background:var(--surface-2);border:1px solid var(--border);
+    font-size:13.5px;font-weight:600;color:var(--text-dim);
+  }
+  .opt-chip.active{background:var(--sage);border-color:var(--sage);color:#0e1a15;}
+  .opt-chip.wide{flex:1 1 100%;}
+
+  .detail-hero{display:flex;gap:12px;align-items:center;margin-bottom:6px;}
+  .detail-hero .tag{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;}
+  .detail-hero .tag svg{width:22px;height:22px;}
+  .detail-block{background:var(--surface-2);border-radius:var(--r-md);padding:14px 16px;margin-top:14px;}
+  .detail-block .k{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);font-weight:700;margin-bottom:5px;}
+  .detail-block .v{font-size:14px;line-height:1.55;}
+
+  /* ---------- Session runner ---------- */
+  .runner{
+    position:fixed;inset:0;background:var(--bg);z-index:80;display:flex;flex-direction:column;
+    transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .runner.show{transform:translateY(0);}
+  .runner-top{
+    display:flex;justify-content:space-between;align-items:center;padding:calc(18px + var(--safe-top)) 20px 8px;
+  }
+  .runner-dots{display:flex;gap:5px;padding:0 20px 6px;flex-wrap:wrap;}
+  .runner-dots .d{width:7px;height:7px;border-radius:50%;background:var(--surface-3);}
+  .runner-dots .d.past{background:var(--sage);}
+  .runner-dots .d.now{background:var(--ember);width:18px;border-radius:4px;}
+  .runner-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 30px;text-align:center;}
+  .phase-label{font-family:var(--ff-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-bottom:18px;}
+  .phase-label.work{color:var(--ember);}
+  .phase-label.rest{color:var(--sage);}
+  .ring-big{width:min(72vw,300px);height:min(72vw,300px);border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;}
+  .ring-big .inner{width:82%;height:82%;border-radius:50%;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ring-big .time{font-family:var(--ff-mono);font-size:56px;font-weight:700;line-height:1;}
+  .ring-big .sub{font-size:12px;color:var(--text-dim);margin-top:6px;}
+  .ex-name{font-size:26px;margin-top:24px;line-height:1.15;}
+  .ex-cue{font-size:14px;color:var(--text-dim);margin-top:8px;line-height:1.5;max-width:320px;}
+  .next-up{font-family:var(--ff-mono);font-size:12px;color:var(--text-faint);margin-top:18px;}
+  .runner-controls{display:flex;align-items:center;justify-content:center;gap:18px;padding:20px 20px calc(28px + var(--safe-bottom));}
+  .rc-btn{
+    width:56px;height:56px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .rc-btn svg{width:22px;height:22px;}
+  .rc-btn.primary{width:74px;height:74px;background:var(--ember);border:none;}
+  .rc-btn.primary svg{width:28px;height:28px;color:#1a0f08;}
+
+  .complete-wrap{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;opacity:0;pointer-events:none;transition:opacity .25s ease;}
+  .complete-wrap.show{opacity:1;pointer-events:auto;}
+  .complete-wrap .badge{width:88px;height:88px;border-radius:50%;background:var(--sage-dim);display:flex;align-items:center;justify-content:center;margin-bottom:22px;}
+  .complete-wrap .badge svg{width:42px;height:42px;color:var(--sage);}
+  .complete-wrap h2{font-size:30px;}
+  .complete-wrap p{color:var(--text-dim);font-size:14px;margin-top:8px;}
+  .complete-stats{display:flex;gap:26px;margin:26px 0;}
+  .complete-stats .box .val{font-family:var(--ff-mono);font-size:26px;font-weight:700;color:var(--ember);}
+  .complete-stats .box .lbl{font-size:11px;color:var(--text-dim);margin-top:2px;text-transform:uppercase;}
+
+  /* ---------- Onboarding ---------- */
+  .onb-overlay{position:fixed;inset:0;background:var(--bg);z-index:90;display:flex;flex-direction:column;padding:calc(30px + var(--safe-top)) 24px calc(24px + var(--safe-bottom));}
+  .onb-step{display:none;flex:1;flex-direction:column;}
+  .onb-step.active{display:flex;}
+  .onb-progress{display:flex;gap:6px;margin-bottom:28px;}
+  .onb-progress div{height:3px;flex:1;background:var(--surface-3);border-radius:2px;}
+  .onb-progress div.done{background:var(--ember);}
+  .onb-step h2{font-size:28px;line-height:1.15;}
+  .onb-step .sub{color:var(--text-dim);font-size:14px;margin-top:8px;line-height:1.5;}
+  .onb-opts{display:flex;flex-direction:column;gap:10px;margin-top:26px;}
+  .onb-opt{
+    background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-md);padding:16px;text-align:left;
+    display:flex;flex-direction:column;gap:2px;
+  }
+  .onb-opt.active{border-color:var(--ember);background:var(--ember-dim);}
+  .onb-opt .t{font-weight:700;font-size:15px;}
+  .onb-opt .s{font-size:12.5px;color:var(--text-dim);}
+  .onb-foot{margin-top:auto;padding-top:20px;}
+
+  .toast{
+    position:fixed;bottom:calc(90px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(10px);
+    background:var(--surface-3);border:1px solid var(--border);padding:11px 18px;border-radius:var(--r-full);
+    font-size:13px;font-weight:600;z-index:95;opacity:0;transition:all .25s ease;pointer-events:none;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  @media (min-width:720px){
+    .runner-body{padding:10px 60px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<div class="topbar">
+  <div class="wordmark">
+    <svg viewBox="0 0 100 100" fill="none"><rect width="100" height="100" rx="22" fill="#1f2528"/><path d="M30 20 L30 80 M30 50 L70 20 M30 50 L70 80" stroke="#ff7a45" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>KINETIC</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="streak-pill" id="streakPill" title="Current streak">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c0-1-.5-2-1-2 1 3 3 4 3 7a5 5 0 0 1-10 0c0-5 5-6 5-14z"/></svg>
+      <span id="streakVal">0</span>
+    </button>
+    <button class="icon-btn" id="settingsBtn" aria-label="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.56V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.56V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.56 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ================= TODAY ================= -->
+<main class="view" id="view-today">
+  <div class="view-head">
+    <div class="eyebrow">Today's session</div>
+    <h1 id="todayGreeting">Let's move</h1>
+    <div class="view-sub" id="todaySub">Loading your plan…</div>
+  </div>
+
+  <div class="hero-card">
+    <div class="hero-top">
+      <div>
+        <div class="hero-day" id="heroDay">MONDAY</div>
+        <div class="hero-title" id="heroTitle">Full-Body Circuit</div>
+        <div class="hero-meta">
+          <span class="chip" id="heroDur">20 min</span>
+          <span class="chip" id="heroLvl">Moderate</span>
+          <span class="chip" id="heroEq">No equipment</span>
+          <span class="chip hidden" id="heroWarmup" style="color:var(--gold);">+ warm-up/cool-down</span>
+        </div>
+      </div>
+      <div class="ring-mini" id="weekRing"><div class="num" id="weekRingNum">0%</div></div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn btn-primary" id="startTodayBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Start session
+      </button>
+      <button class="btn btn-ghost" id="swapTodayBtn">Swap</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <button class="btn btn-ghost btn-block" id="surpriseBtn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l3-9 4 18 3-9h6"/></svg>
+      Surprise me — random session
+    </button>
+  </div>
+
+  <div class="section">
+    <div class="stat-row">
+      <div class="stat-box"><div class="val" id="statWeek">0/7</div><div class="lbl">This week</div></div>
+      <div class="stat-box"><div class="val" id="statTotal">0</div><div class="lbl">Total sessions</div></div>
+      <div class="stat-box"><div class="val" id="statMinutes">0</div><div class="lbl">Minutes moved</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h3>Quick start blueprints</h3></div>
+    <div class="card-row" id="blueprintRow"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h3>Why this plan</h3></div>
+    <div class="view-sub" style="margin-top:0;">
+      Built around a holistic weekly rhythm — strength work twice a week, cardio conditioning two to three times, and short daily mobility — the balance current training guidance points to for building strength, protecting joints, and recovering well, at any age.
+    </div>
+  </div>
+</main>
+
+<!-- ================= LIBRARY ================= -->
+<main class="view hidden" id="view-library">
+  <div class="view-head">
+    <div class="eyebrow">Browse</div>
+    <h1>Library</h1>
+    <div class="view-sub">Every exercise and ready-made session, filterable by your equipment, level, and goal.</div>
+  </div>
+
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="text" id="libSearch" placeholder="Search exercises…">
+  </div>
+
+  <div class="chip-scroll" id="goalChips"></div>
+  <div class="chip-scroll" id="levelChips"></div>
+  <div class="chip-scroll" id="equipChips"></div>
+
+  <div class="section" style="margin-top:6px;">
+    <div class="section-head"><h3>Session blueprints</h3></div>
+    <div class="card-row" id="libBlueprintRow"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h3 id="libCount">Exercises</h3></div>
+    <div class="grid-list" id="exList"></div>
+  </div>
+</main>
+
+<!-- ================= PLAN ================= -->
+<main class="view hidden" id="view-plan">
+  <div class="view-head">
+    <div class="eyebrow">This week</div>
+    <h1>Plan</h1>
+    <div class="view-sub">Tap any day to change it, mark it done, or set it to rest. Nothing here is fixed — build the week your way.</div>
+  </div>
+  <div class="hero-actions" style="margin-bottom:20px;">
+    <button class="btn btn-primary" id="autoFillBtn">Auto-fill week</button>
+    <button class="btn btn-ghost" id="clearWeekBtn">Clear week</button>
+  </div>
+  <div class="week-list" id="weekList"></div>
+</main>
+
+<!-- ================= PROGRESS ================= -->
+<main class="view hidden" id="view-progress">
+  <div class="view-head">
+    <div class="eyebrow">Track</div>
+    <h1>Progress</h1>
+    <div class="view-sub">Your consistency over time — every session counts more than any single hard one.</div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="val" id="pStreak">0</div><div class="lbl">Day streak</div></div>
+    <div class="stat-box"><div class="val" id="pTotal">0</div><div class="lbl">Sessions</div></div>
+    <div class="stat-box"><div class="val" id="pMinutes">0</div><div class="lbl">Minutes</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h3>Last 5 weeks</h3></div>
+    <div class="heat-grid" id="heatGrid"></div>
+    <div class="heat-legend"><span>Less</span><div class="heat-cell" data-lvl="0"></div><div class="heat-cell" data-lvl="1"></div><div class="heat-cell" data-lvl="2"></div><div class="heat-cell" data-lvl="3"></div><span>More</span></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h3>Recent sessions</h3></div>
+    <div id="histList"></div>
+  </div>
+</main>
+
+<!-- ================= BOTTOM NAV ================= -->
+<nav class="bottomnav">
+  <button class="navbtn active" data-view="today">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+    Today
+  </button>
+  <button class="navbtn" data-view="library">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    Library
+  </button>
+  <button class="navbtn" data-view="plan">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    Plan
+  </button>
+  <button class="navbtn" data-view="progress">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+    Progress
+  </button>
+</nav>
+
+<!-- ================= EXERCISE DETAIL SHEET ================= -->
+<div class="overlay" id="exOverlay">
+  <div class="sheet" style="position:relative;">
+    <button class="icon-btn close-x" data-close="exOverlay" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="sheet-handle"></div>
+    <div class="detail-hero">
+      <div class="tag" id="exTag"></div>
+      <div>
+        <h2 id="exName" style="font-size:22px;"></h2>
+        <div id="exBadges" style="display:flex;gap:6px;margin-top:5px;"></div>
+      </div>
+    </div>
+    <div class="detail-block"><div class="k">How to do it</div><div class="v" id="exCue"></div></div>
+    <div class="detail-block" id="exModBlock"><div class="k">Modification</div><div class="v" id="exMod"></div></div>
+    <div class="detail-block"><div class="k">Suggested dose</div><div class="v" id="exDose"></div></div>
+    <button class="btn btn-primary btn-block" style="margin-top:18px;" id="exStartSolo">Start this exercise</button>
+  </div>
+</div>
+
+<!-- ================= BLUEPRINT / DURATION PICKER SHEET ================= -->
+<div class="overlay" id="bpOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 id="bpTitle">Full-Body Circuit</h2>
+    <div class="view-sub" id="bpDesc" style="margin-top:2px;"></div>
+    <div class="field-label">Duration</div>
+    <div class="opt-grid" id="bpDurations"></div>
+    <div class="field-label">Assign to</div>
+    <div class="opt-grid" id="bpAssign"></div>
+    <button class="btn btn-primary btn-block" style="margin-top:20px;" id="bpConfirm">Start now</button>
+  </div>
+</div>
+
+<!-- ================= CUSTOM DAY SHEET (plan editor) ================= -->
+<div class="overlay" id="dayOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 id="dayTitle">Monday</h2>
+    <div class="field-label">Choose a blueprint</div>
+    <div class="opt-grid" id="dayBlueprints"></div>
+    <div class="field-label">Or</div>
+    <div class="opt-grid">
+      <button class="opt-chip wide" id="dayRest">Set as rest day</button>
+      <button class="opt-chip wide" id="dayCustom">Build custom (pick exercises)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CUSTOM BUILDER SHEET ================= -->
+<div class="overlay" id="customOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2>Build your session</h2>
+    <div class="view-sub" style="margin-top:2px;">Tap exercises to add them, in any order you like.</div>
+    <div class="search-wrap" style="margin-top:14px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="customSearch" placeholder="Search…">
+    </div>
+    <div id="customSelectedWrap" class="hidden">
+      <div class="field-label">Selected (<span id="customCount">0</span>)</div>
+      <div class="chip-scroll" id="customSelected"></div>
+    </div>
+    <div class="grid-list" id="customList" style="margin-top:6px;"></div>
+    <button class="btn btn-primary btn-block" style="margin-top:16px;" id="customStart">Start session</button>
+  </div>
+</div>
+
+<!-- ================= SETTINGS SHEET ================= -->
+<div class="overlay" id="settingsOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2>Settings</h2>
+    <div class="field-label">Experience level</div>
+    <div class="opt-grid" id="setLevel"></div>
+    <div class="field-label">Age band</div>
+    <div class="opt-grid" id="setAge"></div>
+    <div class="field-label">Available equipment</div>
+    <div class="opt-grid" id="setEquip"></div>
+    <div class="field-label">Warm-up &amp; cool-down</div>
+    <div class="opt-grid" id="setWarmup"></div>
+    <div class="field-label">Sound cues</div>
+    <div class="opt-grid" id="setSound"></div>
+    <button class="btn btn-primary btn-block" style="margin-top:20px;" id="setSave">Save settings</button>
+    <button class="btn btn-ghost btn-block" style="margin-top:10px;" id="setReset">Reset all data</button>
+  </div>
+</div>
+
+<!-- ================= HISTORY DAY DETAIL SHEET ================= -->
+<div class="overlay" id="historyDayOverlay">
+  <div class="sheet" style="position:relative;">
+    <button class="icon-btn close-x" data-close="historyDayOverlay" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="sheet-handle"></div>
+    <h2 id="hdTitle">Monday, Jan 1</h2>
+    <div class="view-sub" id="hdSub" style="margin-top:2px;"></div>
+    <div id="hdList" style="margin-top:16px;"></div>
+  </div>
+</div>
+
+<!-- ================= SESSION RUNNER ================= -->
+<div class="runner" id="runner">
+  <div class="runner-top">
+    <button class="icon-btn" id="runnerQuit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <div class="mono" id="runnerCount" style="font-size:13px;color:var(--text-dim);">1 / 8</div>
+    <button class="icon-btn" id="runnerMute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path id="muteWave" d="M19 5a13 13 0 0 1 0 14M15 8a8 8 0 0 1 0 8"/></svg></button>
+  </div>
+  <div class="runner-dots" id="runnerDots"></div>
+  <div class="runner-body">
+    <div class="phase-label work" id="phaseLabel">Work</div>
+    <div class="ring-big" id="ringBig">
+      <div class="inner">
+        <div class="time mono" id="ringTime">00:30</div>
+        <div class="sub" id="ringSub">seconds left</div>
+      </div>
+    </div>
+    <div class="ex-name" id="runnerExName">Bodyweight Squat</div>
+    <div class="ex-cue" id="runnerExCue">Feet shoulder-width, sit hips back like reaching for a chair.</div>
+    <div class="next-up" id="runnerNext">NEXT — Push-Up · 30s</div>
+  </div>
+  <div class="runner-controls">
+    <button class="rc-btn" id="runnerPrev" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20 9 12l10-8v16zM5 19V5"/></svg></button>
+    <button class="rc-btn primary" id="runnerPause" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" id="pauseIcon"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></button>
+    <button class="rc-btn" id="runnerSkip" aria-label="Skip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4l10 8-10 8V4zM19 5v14"/></svg></button>
+  </div>
+
+  <div class="complete-wrap" id="completeWrap">
+    <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+    <h2>Session complete</h2>
+    <p id="completeSub">Nice work — that's one more day in the bank.</p>
+    <div class="complete-stats">
+      <div class="box"><div class="val" id="cMinutes">20</div><div class="lbl">Minutes</div></div>
+      <div class="box"><div class="val" id="cExercises">8</div><div class="lbl">Exercises</div></div>
+      <div class="box"><div class="val" id="cStreak">3</div><div class="lbl">Streak</div></div>
+    </div>
+    <button class="btn btn-primary btn-block" id="completeClose" style="max-width:280px;">Done</button>
+  </div>
+</div>
+
+<!-- ================= ONBOARDING ================= -->
+<div class="onb-overlay" id="onboarding">
+  <div class="onb-progress"><div id="onbP1"></div><div id="onbP2"></div><div id="onbP3"></div></div>
+
+  <div class="onb-step active" id="onbStep1">
+    <h2>Where are you starting from?</h2>
+    <div class="sub">This sets your default intensity — you can change it any time in Settings.</div>
+    <div class="onb-opts" id="onbLevelOpts"></div>
+    <div class="onb-foot"><button class="btn btn-primary btn-block" id="onbNext1" disabled>Continue</button></div>
+  </div>
+
+  <div class="onb-step" id="onbStep2">
+    <h2>What's your age range?</h2>
+    <div class="sub">Kinetic adjusts rest periods, impact, and balance work to match — nothing is ever locked, just defaulted sensibly.</div>
+    <div class="onb-opts" id="onbAgeOpts"></div>
+    <div class="onb-foot"><button class="btn btn-primary btn-block" id="onbNext2" disabled>Continue</button></div>
+  </div>
+
+  <div class="onb-step" id="onbStep3">
+    <h2>What have you got to work with?</h2>
+    <div class="sub">Pick everything available to you. Bodyweight-only is always fully supported.</div>
+    <div class="opt-grid" id="onbEquipOpts" style="margin-top:22px;"></div>
+    <div class="onb-foot"><button class="btn btn-primary btn-block" id="onbFinish">Build my plan</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* =====================================================================
+   DATA: EXERCISE LIBRARY
+   cat: strength | cardio | flex | recovery
+   equip: none | mat | chair | wall | band | dumbbell | kettlebell | pullupbar | bench
+   level: beginner | moderate | advanced
+   impact: low | high   balance: true marks balance-forward moves
+===================================================================== */
+const EX = [
+// ---- STRENGTH — bodyweight ----
+{id:'sq-bw',name:'Bodyweight Squat',cat:'strength',equip:['none'],level:'beginner',muscles:['legs','glutes'],secs:40,reps:'12–15 reps',cue:'Feet shoulder-width, chest tall, sit your hips back and down like reaching for a chair, then drive through your heels to stand.',mod:'Hold onto a chair back or wall for balance support.',impact:'low'},
+{id:'pu-wall',name:'Wall Push-Up',cat:'strength',equip:['wall'],level:'beginner',muscles:['chest','arms'],secs:30,reps:'10–15 reps',cue:'Stand arm\'s length from a wall, hands flat at shoulder height, bend elbows to bring chest toward the wall, then press back.',mod:'Move feet closer to the wall to reduce difficulty.',impact:'low'},
+{id:'pu-incl',name:'Incline Push-Up',cat:'strength',equip:['chair'],level:'beginner',muscles:['chest','arms','core'],secs:35,reps:'8–12 reps',cue:'Hands on a sturdy chair or bench, body in a straight line, lower chest toward the edge, then press up.',mod:'Use a higher surface (counter) to make it easier.',impact:'low'},
+{id:'pu-std',name:'Standard Push-Up',cat:'strength',equip:['none'],level:'moderate',muscles:['chest','arms','core'],secs:40,reps:'8–15 reps',cue:'Hands under shoulders, body rigid from head to heels, lower until chest nears the floor, press back up without flaring elbows wide.',mod:'Drop to knees to reduce load while keeping the same range.',impact:'low'},
+{id:'pu-dia',name:'Diamond Push-Up',cat:'strength',equip:['none'],level:'advanced',muscles:['triceps','chest'],secs:35,reps:'6–12 reps',cue:'Hands together under your chest forming a diamond shape, lower with elbows close to your ribs, press up.',mod:'Elevate hands on a step if full range is too hard.',impact:'low'},
+{id:'gb',name:'Glute Bridge',cat:'strength',equip:['mat'],level:'beginner',muscles:['glutes','hamstrings'],secs:40,reps:'12–15 reps',cue:'Lie on your back, knees bent, feet flat, drive hips up until shoulders-hips-knees form a line, squeeze glutes at the top.',mod:'',impact:'low'},
+{id:'sl-gb',name:'Single-Leg Glute Bridge',cat:'strength',equip:['mat'],level:'moderate',muscles:['glutes'],secs:35,reps:'8–10 each side',cue:'From a bridge, extend one leg straight, drive through the grounded heel to lift hips without letting them rotate.',mod:'Keep both feet down and just tap one heel forward.',impact:'low'},
+{id:'lunge-rev',name:'Reverse Lunge',cat:'strength',equip:['none'],level:'beginner',muscles:['legs','glutes'],secs:40,reps:'10 each side',cue:'Step one foot back, lower the back knee toward the floor, front shin stays vertical, push back to standing.',mod:'Hold a wall or chair for balance.',impact:'low'},
+{id:'lunge-walk',name:'Walking Lunge',cat:'strength',equip:['none'],level:'moderate',muscles:['legs','glutes'],secs:40,reps:'10 each side',cue:'Step forward into a lunge, then bring the back leg through into the next step, continuing forward across the room.',mod:'Do reverse lunges in place instead of traveling.',impact:'low'},
+{id:'bss',name:'Bulgarian Split Squat',cat:'strength',equip:['chair'],level:'advanced',muscles:['legs','glutes'],secs:40,reps:'8–10 each side',cue:'Rear foot up on a chair behind you, lower the front knee until the rear thigh is near parallel, drive back up.',mod:'Reduce range of motion or hold support with one hand.',impact:'low'},
+{id:'jsq',name:'Jump Squat',cat:'strength',equip:['none'],level:'advanced',muscles:['legs','power'],secs:30,reps:'8–12 reps',cue:'Squat down, then explode upward into a jump, landing softly with bent knees straight back into the next squat.',mod:'Swap for a regular squat with a calf raise at the top.',impact:'high'},
+{id:'stepup',name:'Step-Up',cat:'strength',equip:['bench'],level:'beginner',muscles:['legs'],secs:40,reps:'10 each side',cue:'Step fully onto a sturdy bench or stair, drive through the lead heel to stand tall, step down with control.',mod:'Use a lower step.',impact:'low'},
+{id:'calf',name:'Calf Raise',cat:'strength',equip:['none'],level:'beginner',muscles:['calves'],secs:35,reps:'15–20 reps',cue:'Stand tall, rise onto your toes as high as possible, lower slowly under control.',mod:'',impact:'low'},
+{id:'sl-calf',name:'Single-Leg Calf Raise',cat:'strength',equip:['wall'],level:'moderate',muscles:['calves'],secs:30,reps:'10–12 each side',cue:'Balance on one foot near a wall for light support, rise onto your toes, lower slowly.',mod:'Keep a finger on the wall for balance.',impact:'low',balance:true},
+{id:'superman',name:'Superman',cat:'strength',equip:['mat'],level:'beginner',muscles:['back','core'],secs:35,reps:'10–12 reps',cue:'Lie face down, simultaneously lift chest, arms, and legs a few inches off the floor, hold briefly, lower with control.',mod:'Lift arms and legs on alternating sides.',impact:'low'},
+{id:'birddog',name:'Bird Dog',cat:'strength',equip:['mat'],level:'beginner',muscles:['core'],secs:40,reps:'8 each side',cue:'On hands and knees, extend opposite arm and leg straight out until level with your spine, keep hips square, return and switch.',mod:'Extend just the arm or just the leg first.',impact:'low',balance:true},
+{id:'plank',name:'Plank',cat:'strength',equip:['mat'],level:'beginner',muscles:['core'],secs:30,reps:'hold',cue:'Forearms down, body in one straight line from head to heels, brace your core and squeeze glutes, breathe steadily.',mod:'Drop to knees while keeping a straight line.',impact:'low'},
+{id:'sideplank',name:'Side Plank',cat:'strength',equip:['mat'],level:'moderate',muscles:['core','obliques'],secs:25,reps:'each side',cue:'Stack feet, prop up on one forearm, lift hips until body forms a straight line, keep hips from sagging.',mod:'Drop the bottom knee to the floor for support.',impact:'low'},
+{id:'planktap',name:'Plank Shoulder Tap',cat:'strength',equip:['mat'],level:'moderate',muscles:['core','shoulders'],secs:35,reps:'16 taps',cue:'From a high plank, tap one hand to the opposite shoulder without letting your hips rotate or sway.',mod:'Widen your feet stance for more stability.',impact:'low'},
+{id:'mtnclimb',name:'Mountain Climbers',cat:'strength',equip:['mat'],level:'moderate',muscles:['core','cardio'],secs:35,reps:'fast pace',cue:'From a high plank, drive knees alternately toward your chest at a quick, controlled pace, keep hips low.',mod:'Slow the pace and step instead of drive.',impact:'high'},
+{id:'bicycle',name:'Bicycle Crunch',cat:'strength',equip:['mat'],level:'moderate',muscles:['core','obliques'],secs:35,reps:'20 total',cue:'Lying on your back, bring opposite elbow to opposite knee in a smooth pedaling motion, keep lower back pressed down.',mod:'Perform slower with a bigger pause at each side.',impact:'low'},
+{id:'deadbug',name:'Dead Bug',cat:'strength',equip:['mat'],level:'beginner',muscles:['core'],secs:40,reps:'8 each side',cue:'On your back, arms up and knees bent at 90°, slowly lower opposite arm and leg toward the floor keeping your low back flat, return.',mod:'Move only the legs, keep arms still.',impact:'low'},
+{id:'hollow',name:'Hollow Body Hold',cat:'strength',equip:['mat'],level:'advanced',muscles:['core'],secs:25,reps:'hold',cue:'Lie on your back, press low back into the floor, lift shoulders and legs slightly, arms overhead, hold the tension.',mod:'Bend knees to 90° to shorten the lever.',impact:'low'},
+{id:'pike',name:'Pike Push-Up',cat:'strength',equip:['none'],level:'advanced',muscles:['shoulders'],secs:35,reps:'6–10 reps',cue:'Hips high in an inverted-V position, lower the crown of your head toward the floor by bending your elbows, press back up.',mod:'Elevate hands instead of feet to reduce the angle.',impact:'low'},
+{id:'dip-chair',name:'Chair Tricep Dip',cat:'strength',equip:['chair'],level:'moderate',muscles:['triceps'],secs:35,reps:'10–12 reps',cue:'Hands on a chair edge behind you, legs extended, lower your body by bending elbows, press back up without shrugging shoulders.',mod:'Bend knees and keep feet close to reduce load.',impact:'low'},
+{id:'wallsit',name:'Wall Sit',cat:'strength',equip:['wall'],level:'beginner',muscles:['legs'],secs:35,reps:'hold',cue:'Back flat against a wall, slide down until thighs are parallel to the floor, knees over ankles, hold.',mod:'Sit higher (smaller knee bend).',impact:'low'},
+{id:'curtsy',name:'Curtsy Lunge',cat:'strength',equip:['none'],level:'moderate',muscles:['legs','glutes'],secs:40,reps:'10 each side',cue:'Step one leg diagonally behind the other like a curtsy, bend both knees, push back to standing.',mod:'Reduce the step-back distance.',impact:'low'},
+{id:'donkey',name:'Donkey Kick',cat:'strength',equip:['mat'],level:'beginner',muscles:['glutes'],secs:35,reps:'12 each side',cue:'On hands and knees, keep the knee bent and kick one heel toward the ceiling, squeeze the glute at the top, lower with control.',mod:'',impact:'low'},
+{id:'firehydrant',name:'Fire Hydrant',cat:'strength',equip:['mat'],level:'beginner',muscles:['glutes','hips'],secs:35,reps:'12 each side',cue:'On hands and knees, lift one bent knee out to the side keeping hips level, lower with control.',mod:'',impact:'low'},
+{id:'sumo',name:'Sumo Squat',cat:'strength',equip:['none'],level:'beginner',muscles:['legs'],secs:40,reps:'12–15 reps',cue:'Feet wide, toes turned out, sit straight down between your legs keeping your chest tall, drive back up.',mod:'',impact:'low'},
+{id:'squatpulse',name:'Squat Pulse',cat:'strength',equip:['none'],level:'moderate',muscles:['legs'],secs:30,reps:'small pulses',cue:'Hold a squat at the bottom position and pulse a few inches up and down without standing fully.',mod:'Pulse through a smaller range.',impact:'low'},
+{id:'pushside',name:'Push-Up to Side Plank',cat:'strength',equip:['mat'],level:'advanced',muscles:['full-body','core'],secs:35,reps:'6 each side',cue:'Do a push-up, then rotate into a side plank reaching one arm to the ceiling, return to plank and repeat on the other side.',mod:'Skip the push-up and just rotate from a plank hold.',impact:'low'},
+{id:'burpee',name:'Burpee (no push-up)',cat:'strength',equip:['none'],level:'advanced',muscles:['full-body','cardio'],secs:30,reps:'fast pace',cue:'Squat, place hands down, jump feet back to a plank, jump feet back in, then jump up reaching overhead.',mod:'Step feet back and forward instead of jumping.',impact:'high'},
+{id:'inchworm',name:'Inchworm',cat:'strength',equip:['mat'],level:'moderate',muscles:['full-body','hamstrings'],secs:35,reps:'6–8 reps',cue:'From standing, hinge and walk hands out to a plank, hold briefly, then walk hands back to your feet and stand.',mod:'Bend knees generously as you fold forward.',impact:'low'},
+{id:'plankjack',name:'Plank Jack',cat:'strength',equip:['mat'],level:'moderate',muscles:['core','cardio'],secs:30,reps:'fast pace',cue:'From a high plank, jump both feet apart and back together while keeping your hips stable.',mod:'Step feet out one at a time instead of jumping.',impact:'high'},
+{id:'squatreach',name:'Squat to Reach',cat:'strength',equip:['none'],level:'beginner',muscles:['full-body'],secs:40,reps:'10–12 reps',cue:'Squat down, then as you stand reach both arms overhead and rise onto your toes.',mod:'',impact:'low'},
+
+// ---- STRENGTH — equipment ----
+{id:'db-goblet',name:'Dumbbell Goblet Squat',cat:'strength',equip:['dumbbell'],level:'moderate',muscles:['legs','glutes'],secs:40,reps:'10–12 reps',cue:'Hold one dumbbell vertically at your chest, squat down between your knees keeping your chest tall, drive up.',mod:'Use a lighter weight or no weight to master form first.',impact:'low'},
+{id:'db-rdl',name:'Dumbbell Romanian Deadlift',cat:'strength',equip:['dumbbell'],level:'moderate',muscles:['hamstrings','glutes','back'],secs:40,reps:'10–12 reps',cue:'Dumbbells in front of thighs, hinge at the hips keeping a slight knee bend and flat back, lower until you feel a hamstring stretch, drive hips forward to stand.',mod:'Reduce range of motion to mid-shin.',impact:'low'},
+{id:'db-shoulderpress',name:'Dumbbell Shoulder Press',cat:'strength',equip:['dumbbell'],level:'moderate',muscles:['shoulders'],secs:35,reps:'10–12 reps',cue:'Dumbbells at shoulder height, press straight overhead until arms are extended, lower with control.',mod:'Press one arm at a time seated for more stability.',impact:'low'},
+{id:'db-row',name:'Dumbbell Bent-Over Row',cat:'strength',equip:['dumbbell'],level:'moderate',muscles:['back'],secs:40,reps:'10–12 reps',cue:'Hinge forward with a flat back, pull both dumbbells toward your hips squeezing your shoulder blades together, lower with control.',mod:'Support your free hand on a chair for a low-back-friendly version.',impact:'low'},
+{id:'db-curl',name:'Dumbbell Bicep Curl',cat:'strength',equip:['dumbbell'],level:'beginner',muscles:['arms'],secs:35,reps:'12–15 reps',cue:'Elbows pinned to your sides, curl the dumbbells up toward your shoulders, lower slowly without swinging.',mod:'',impact:'low'},
+{id:'db-tricep',name:'Dumbbell Overhead Tricep Extension',cat:'strength',equip:['dumbbell'],level:'moderate',muscles:['triceps'],secs:35,reps:'10–12 reps',cue:'One dumbbell held overhead with both hands, lower it slowly behind your head by bending elbows, extend back up.',mod:'Use a lighter weight and reduce range.',impact:'low'},
+{id:'db-lunge',name:'Dumbbell Lunge',cat:'strength',equip:['dumbbell'],level:'moderate',muscles:['legs'],secs:40,reps:'10 each side',cue:'Hold a dumbbell in each hand, step into a lunge keeping the front shin vertical, push back to standing.',mod:'Perform bodyweight lunges first to groove the pattern.',impact:'low'},
+{id:'kb-swing',name:'Kettlebell Swing',cat:'strength',equip:['kettlebell'],level:'advanced',muscles:['full-body','power'],secs:35,reps:'12–15 reps',cue:'Hinge at the hips and swing the kettlebell between your legs, then snap your hips forward to drive it to shoulder height, power comes from the hips, not the arms.',mod:'Practice the hip hinge without weight first.',impact:'low'},
+{id:'kb-goblet',name:'Kettlebell Goblet Squat',cat:'strength',equip:['kettlebell'],level:'moderate',muscles:['legs'],secs:40,reps:'10–12 reps',cue:'Hold the kettlebell by the horns at chest height, squat down between your knees, drive back up.',mod:'',impact:'low'},
+{id:'kb-deadlift',name:'Kettlebell Deadlift',cat:'strength',equip:['kettlebell'],level:'moderate',muscles:['hamstrings','back'],secs:40,reps:'10–12 reps',cue:'Kettlebell between your feet, hinge down keeping a flat back, stand tall by driving through your heels.',mod:'',impact:'low'},
+{id:'band-row',name:'Resistance Band Row',cat:'strength',equip:['band'],level:'beginner',muscles:['back'],secs:35,reps:'12–15 reps',cue:'Anchor the band at chest height, pull both handles toward your ribs, squeeze shoulder blades together, return slowly.',mod:'Use a lighter-resistance band.',impact:'low'},
+{id:'band-squat',name:'Resistance Band Squat',cat:'strength',equip:['band'],level:'beginner',muscles:['legs'],secs:40,reps:'12–15 reps',cue:'Band under both feet, handles at shoulders, squat down against the band tension, drive back up.',mod:'',impact:'low'},
+{id:'band-lateral',name:'Resistance Band Lateral Walk',cat:'strength',equip:['band'],level:'beginner',muscles:['glutes','hips'],secs:35,reps:'8 steps each way',cue:'Band around your thighs or ankles, stay in a quarter-squat, step sideways keeping tension on the band throughout.',mod:'Use a lighter band or smaller steps.',impact:'low'},
+{id:'band-chest',name:'Resistance Band Chest Press',cat:'strength',equip:['band'],level:'moderate',muscles:['chest'],secs:35,reps:'12–15 reps',cue:'Anchor the band behind you, press both handles forward at chest height until arms are extended, return slowly.',mod:'',impact:'low'},
+{id:'pullup',name:'Pull-Up',cat:'strength',equip:['pullupbar'],level:'advanced',muscles:['back','arms'],secs:30,reps:'as many as possible',cue:'Hang with an overhand grip, pull your chin above the bar leading with your chest, lower with full control.',mod:'Use a resistance band looped over the bar for assistance.',impact:'low'},
+{id:'chinup',name:'Chin-Up',cat:'strength',equip:['pullupbar'],level:'advanced',muscles:['back','arms'],secs:30,reps:'as many as possible',cue:'Underhand grip, pull yourself up until your chin clears the bar, lower slowly.',mod:'Use a resistance band for assistance.',impact:'low'},
+{id:'hangkneeraise',name:'Hanging Knee Raise',cat:'strength',equip:['pullupbar'],level:'advanced',muscles:['core'],secs:30,reps:'10–12 reps',cue:'Hang from the bar, raise your knees toward your chest without swinging, lower with control.',mod:'Bend knees less or use a slight swing to start.',impact:'low'},
+{id:'benchstepdb',name:'Weighted Step-Up',cat:'strength',equip:['dumbbell','bench'],level:'advanced',muscles:['legs'],secs:40,reps:'10 each side',cue:'Dumbbell in each hand, step fully onto the bench, drive through the lead heel, step down with control.',mod:'Drop the weights and use bodyweight only.',impact:'low'},
+
+// ---- CARDIO ----
+{id:'jj',name:'Jumping Jacks',cat:'cardio',equip:['none'],level:'beginner',muscles:['full-body'],secs:30,reps:'steady pace',cue:'Jump feet out while raising arms overhead, jump back to start, keep a steady rhythm.',mod:'Step side to side instead of jumping.',impact:'high'},
+{id:'march',name:'Marching in Place',cat:'cardio',equip:['none'],level:'beginner',muscles:['cardio'],secs:40,reps:'steady pace',cue:'Lift knees to hip height alternately at a comfortable pace, swing arms naturally.',mod:'',impact:'low'},
+{id:'buttkick',name:'Butt Kicks',cat:'cardio',equip:['none'],level:'moderate',muscles:['legs','cardio'],secs:30,reps:'fast pace',cue:'Jog in place kicking your heels up toward your glutes, keep your chest tall.',mod:'Slow the tempo.',impact:'high'},
+{id:'skater',name:'Skater Hops',cat:'cardio',equip:['none'],level:'advanced',muscles:['legs','cardio'],secs:30,reps:'fast pace',cue:'Leap sideways from one foot to the other in a skating motion, swinging the trailing leg behind you for balance.',mod:'Step side to side instead of hopping.',impact:'high'},
+{id:'fastfeet',name:'Fast Feet',cat:'cardio',equip:['none'],level:'moderate',muscles:['cardio'],secs:25,reps:'quick tempo',cue:'Stay low and light, tap your feet rapidly in place like running without moving forward.',mod:'',impact:'high'},
+{id:'lowimpjack',name:'Low-Impact Jack',cat:'cardio',equip:['none'],level:'beginner',muscles:['cardio'],secs:35,reps:'steady pace',cue:'Step one foot out to the side while raising arms overhead, step back, alternate sides — same as a jumping jack, no jump.',mod:'',impact:'low'},
+{id:'shadowbox',name:'Shadow Boxing',cat:'cardio',equip:['none'],level:'moderate',muscles:['arms','cardio'],secs:40,reps:'continuous',cue:'Throw controlled punches into open air while staying light on your feet, engage your core with each punch.',mod:'Slow the pace or reduce arm range.',impact:'low'},
+{id:'starjump',name:'Star Jump',cat:'cardio',equip:['none'],level:'advanced',muscles:['full-body','cardio'],secs:30,reps:'fast pace',cue:'Squat slightly then jump explosively, spreading arms and legs into a star shape mid-air, land softly.',mod:'Perform as a standard jumping jack instead.',impact:'high'},
+{id:'obliquecrunch',name:'Standing Oblique Crunch',cat:'cardio',equip:['none'],level:'beginner',muscles:['core','cardio'],secs:35,reps:'12 each side',cue:'Standing, bring one knee up and elbow down to meet it at your side, alternate at a steady pace.',mod:'',impact:'low'},
+{id:'stepclimb',name:'Step Climb',cat:'cardio',equip:['bench'],level:'moderate',muscles:['legs','cardio'],secs:40,reps:'steady pace',cue:'Step up and down off a sturdy step or bench at a brisk, controlled pace, alternating your lead foot.',mod:'Use a lower step and slower pace.',impact:'low'},
+
+// ---- FLEXIBILITY / MOBILITY ----
+{id:'catcow',name:'Cat-Cow Stretch',cat:'flex',equip:['mat'],level:'beginner',muscles:['spine'],secs:40,reps:'slow flow',cue:'On hands and knees, arch your back and drop your belly on the inhale, round your spine and tuck your chin on the exhale.',mod:'',impact:'low'},
+{id:'childspose',name:"Child's Pose",cat:'flex',equip:['mat'],level:'beginner',muscles:['back','hips'],secs:45,reps:'hold',cue:'Kneel and sit back onto your heels, reach arms forward and rest your forehead down, breathe deeply.',mod:'Place a cushion under your hips if it feels tight.',impact:'low'},
+{id:'downdog',name:'Downward Dog',cat:'flex',equip:['mat'],level:'beginner',muscles:['full-body'],secs:40,reps:'hold',cue:'From hands and knees, lift hips up and back forming an inverted V, press heels toward the floor, relax your neck.',mod:'Bend your knees generously.',impact:'low'},
+{id:'hamstretch',name:'Standing Hamstring Stretch',cat:'flex',equip:['none'],level:'beginner',muscles:['hamstrings'],secs:35,reps:'each side',cue:'Extend one heel forward, hinge at the hips keeping your back flat, feel a stretch down the back of your leg.',mod:'Bend your knee slightly.',impact:'low'},
+{id:'hipflexor',name:'Hip Flexor Lunge Stretch',cat:'flex',equip:['mat'],level:'beginner',muscles:['hips'],secs:40,reps:'each side',cue:'Kneel in a low lunge, tuck your pelvis under and gently shift weight forward until you feel a stretch at the front of the back hip.',mod:'',impact:'low'},
+{id:'seatedfold',name:'Seated Forward Fold',cat:'flex',equip:['mat'],level:'beginner',muscles:['hamstrings','back'],secs:40,reps:'hold',cue:'Sit with legs extended, hinge forward from your hips reaching toward your feet, keep your spine long rather than rounding.',mod:'Bend your knees.',impact:'low'},
+{id:'threadneedle',name:'Thread the Needle',cat:'flex',equip:['mat'],level:'beginner',muscles:['spine','shoulders'],secs:35,reps:'each side',cue:'From hands and knees, slide one arm under your body and rest your shoulder and cheek on the floor, feel a stretch across your upper back.',mod:'',impact:'low'},
+{id:'crossbody',name:'Shoulder Cross-Body Stretch',cat:'flex',equip:['none'],level:'beginner',muscles:['shoulders'],secs:30,reps:'each side',cue:'Pull one arm gently across your chest with the other hand, hold without pain.',mod:'',impact:'low'},
+{id:'neckrolls',name:'Neck Rolls',cat:'flex',equip:['none'],level:'beginner',muscles:['neck'],secs:30,reps:'slow',cue:'Gently roll your head in a slow half-circle from ear to ear, avoid rolling straight back.',mod:'',impact:'low'},
+{id:'anklecircles',name:'Ankle Circles',cat:'flex',equip:['none'],level:'beginner',muscles:['ankles'],secs:30,reps:'each direction',cue:'Lift one foot slightly and circle your ankle slowly in both directions.',mod:'',impact:'low',balance:true},
+{id:'wgs',name:"World's Greatest Stretch",cat:'flex',equip:['mat'],level:'moderate',muscles:['full-body'],secs:40,reps:'each side',cue:'Step into a deep lunge, place both hands inside your front foot, rotate your torso and reach one arm to the ceiling.',mod:'Skip the rotation and just hold the lunge.',impact:'low'},
+{id:'deepsquat',name:'Deep Squat Hold',cat:'flex',equip:['none'],level:'moderate',muscles:['hips','ankles'],secs:40,reps:'hold',cue:'Lower into the deepest comfortable squat, elbows pressing knees outward, chest tall, breathe and relax into it.',mod:'Hold onto something in front of you for balance.',impact:'low'},
+{id:'quadstretch',name:'Standing Quad Stretch',cat:'flex',equip:['none'],level:'beginner',muscles:['quads'],secs:30,reps:'each side',cue:'Balance on one leg, pull the other heel toward your glutes, keep your knees close together.',mod:'Hold onto a wall or chair for balance.',impact:'low',balance:true},
+{id:'spinaltwist',name:'Spinal Twist',cat:'flex',equip:['mat'],level:'beginner',muscles:['spine'],secs:40,reps:'each side',cue:'Lying on your back, drop both knees to one side while keeping shoulders flat on the floor, breathe into the stretch.',mod:'',impact:'low'},
+{id:'figure4',name:'Figure-4 Glute Stretch',cat:'flex',equip:['chair'],level:'beginner',muscles:['glutes','hips'],secs:40,reps:'each side',cue:'Seated, cross one ankle over the opposite knee, gently hinge forward until you feel a stretch in the glute.',mod:'',impact:'low'},
+{id:'armcircles',name:'Arm Circles',cat:'flex',equip:['none'],level:'beginner',muscles:['shoulders'],secs:40,reps:'continuous',cue:'Extend arms out to your sides and make smooth, controlled circles — small at first, gradually larger — then reverse direction.',mod:'',impact:'low'},
+{id:'torsotwist',name:'Torso Twist',cat:'flex',equip:['none'],level:'beginner',muscles:['spine','core'],secs:40,reps:'continuous',cue:'Feet hip-width, gently rotate your torso side to side letting your arms swing loosely, keep your hips relatively still.',mod:'',impact:'low'},
+{id:'legswings',name:'Leg Swings',cat:'flex',equip:['wall'],level:'beginner',muscles:['hips'],secs:45,reps:'each side',cue:'Hold a wall for balance, swing one leg forward and back in a controlled arc, then side to side, keeping your torso tall.',mod:'Hold on with both hands if needed.',impact:'low',balance:true},
+
+// ---- BALANCE ----
+{id:'singleleg',name:'Single-Leg Stance',cat:'flex',equip:['none'],level:'beginner',muscles:['balance'],secs:30,reps:'each side',cue:'Stand tall and lift one foot slightly off the floor, hold steady, focus on a fixed point ahead.',mod:'Keep fingertips near a wall or chair.',impact:'low',balance:true},
+{id:'heeltoe',name:'Heel-to-Toe Walk',cat:'flex',equip:['none'],level:'beginner',muscles:['balance'],secs:35,reps:'across the room',cue:'Walk in a straight line placing the heel of one foot directly in front of the toes of the other.',mod:'Walk near a wall for support.',impact:'low',balance:true},
+{id:'clockreach',name:'Single-Leg Clock Reach',cat:'strength',equip:['none'],level:'moderate',muscles:['balance','glutes'],secs:35,reps:'each side',cue:'Balance on one leg, reach the opposite foot forward, then to the side, then behind you, like touching numbers on a clock.',mod:'Reduce the reach distance.',impact:'low',balance:true},
+{id:'treepose',name:'Tree Pose',cat:'flex',equip:['none'],level:'moderate',muscles:['balance','core'],secs:35,reps:'each side',cue:'Balance on one leg, place the other foot on your inner calf or thigh (not the knee), bring hands to your chest or overhead.',mod:'Keep the lifted foot\'s toes on the ground for light support.',impact:'low',balance:true},
+
+// ---- RECOVERY ----
+{id:'boxbreath',name:'Box Breathing',cat:'recovery',equip:['none'],level:'beginner',muscles:['breath'],secs:60,reps:'continuous',cue:'Inhale for 4 counts, hold for 4, exhale for 4, hold for 4 — repeat in a steady square pattern.',mod:'',impact:'low'},
+{id:'diaphragm',name:'Diaphragmatic Breathing',cat:'recovery',equip:['mat'],level:'beginner',muscles:['breath'],secs:60,reps:'continuous',cue:'Lying down, one hand on your belly, breathe so your belly rises more than your chest, exhale slowly and fully.',mod:'',impact:'low'},
+{id:'quadroll',name:'Quad Release',cat:'recovery',equip:['mat'],level:'beginner',muscles:['recovery'],secs:45,reps:'each side',cue:'If you have a roller, roll slowly along the front of your thigh; otherwise, hold a gentle standing quad stretch instead.',mod:'',impact:'low'},
+{id:'fullstretchflow',name:'Gentle Full-Body Flow',cat:'recovery',equip:['mat'],level:'beginner',muscles:['recovery'],secs:50,reps:'continuous',cue:'Move slowly between child\'s pose, cat-cow, and a gentle seated twist, following your breath rather than a count.',mod:'',impact:'low'},
+{id:'pmr',name:'Progressive Muscle Relaxation',cat:'recovery',equip:['mat'],level:'beginner',muscles:['recovery'],secs:60,reps:'continuous',cue:'Tense one muscle group for 5 seconds, then release and notice the relaxation, working slowly from your feet up to your face.',mod:'',impact:'low'},
+];
+
+/* Icon lookup per category for tags */
+const CAT_META = {
+  strength:{color:'ember',icon:'<path d="M6.5 6.5 17.5 17.5M4 9V4h5M20 15v5h-5"/>'},
+  cardio:{color:'ember',icon:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>'},
+  flex:{color:'sage',icon:'<path d="M4 20c4-8 8-12 16-16M4 4c4 2 8 8 8 8"/>'},
+  recovery:{color:'sage',icon:'<circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/>'}
+};
+
+/* =====================================================================
+   DATA: SESSION BLUEPRINTS
+===================================================================== */
+const BLUEPRINTS = [
+  {id:'fullbody',name:'Full-Body Circuit',cat:'strength',desc:'Total-body compound moves for balanced strength.',filter:e=>e.cat==='strength'&&e.muscles.some(m=>['legs','glutes','full-body','chest','back'].includes(m))},
+  {id:'upperpush',name:'Upper Body Push/Pull',cat:'strength',desc:'Chest, back, shoulders and arms.',filter:e=>e.cat==='strength'&&e.muscles.some(m=>['chest','back','shoulders','arms','triceps'].includes(m))},
+  {id:'lowerpower',name:'Lower Body Power',cat:'strength',desc:'Legs and glutes, from squats to lunges.',filter:e=>e.cat==='strength'&&e.muscles.some(m=>['legs','glutes','calves'].includes(m))},
+  {id:'core',name:'Core & Stability',cat:'strength',desc:'Deep core control and rotation work.',filter:e=>e.muscles.some(m=>['core','obliques'].includes(m))},
+  {id:'cardiocond',name:'Cardio Conditioning',cat:'cardio',desc:'Higher-energy intervals to raise your heart rate.',filter:e=>e.cat==='cardio'||(e.cat==='strength'&&e.impact==='high')},
+  {id:'steadycardio',name:'Steady Cardio Flow',cat:'cardio',desc:'Lower-impact, joint-friendly cardio.',filter:e=>e.cat==='cardio'&&e.impact==='low'},
+  {id:'mobility',name:'Flexibility & Mobility Flow',cat:'flex',desc:'Loosen up and move through full range.',filter:e=>e.cat==='flex'&&!e.balance},
+  {id:'recoveryflow',name:'Recovery & Breathwork',cat:'recovery',desc:'Gentle, restful, nervous-system reset.',filter:e=>e.cat==='recovery'},
+  {id:'balancelong',name:'Balance & Longevity',cat:'flex',desc:'Stability work that protects you for the long run.',filter:e=>e.balance===true},
+  {id:'power',name:'Power & Athletic Conditioning',cat:'strength',desc:'Explosive bodyweight work for advanced movers.',filter:e=>e.level==='advanced'},
+];
+
+/* =====================================================================
+   STATE
+===================================================================== */
+const LS = {
+  profile:'kinetic.profile', plan:'kinetic.plan', history:'kinetic.history'
+};
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const EQUIP_LABELS = {none:'Bodyweight',mat:'Mat',chair:'Chair',wall:'Wall',band:'Band',dumbbell:'Dumbbells',kettlebell:'Kettlebell',pullupbar:'Pull-up bar',bench:'Bench/step'};
+const LEVEL_ORDER = {beginner:0,moderate:1,advanced:2};
+
+function loadJSON(key,fallback){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback;}catch(e){return fallback;}}
+function save(key,val){try{localStorage.setItem(key,JSON.stringify(val));}catch(e){}}
+
+let profile = loadJSON(LS.profile,null);
+let plan = loadJSON(LS.plan,{});         // { 'YYYY-MM-DD': {type:'blueprint'|'custom'|'rest', bpId, exerciseIds, durationMin, name, status:'pending'|'done'} }
+let history = loadJSON(LS.history,[]);   // [{date, name, durationMin, exerciseCount}]
+
+function todayKey(offset){offset=offset||0;const d=new Date();d.setDate(d.getDate()+offset);return d.toISOString().slice(0,10);}
+function dateLabel(offset){const d=new Date();d.setDate(d.getDate()+offset);return d;}
+
+/* =====================================================================
+   AUDIO CUES
+===================================================================== */
+let audioCtx=null;
+function beep(freq,dur,vol){
+  if(profile && profile.sound===false) return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type='sine'; o.frequency.value=freq;
+    g.gain.value=(vol||0.05);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime+(dur||0.15));
+  }catch(e){}
+}
+
+/* =====================================================================
+   TOAST
+===================================================================== */
+let toastTimer=null;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* =====================================================================
+   ONBOARDING
+===================================================================== */
+const LEVELS_INFO = [
+  {id:'beginner',t:'New / returning',s:'Little to no regular training in the last few months.'},
+  {id:'moderate',t:'Somewhat active',s:'You train from time to time and can hold a plank or do a few push-ups.'},
+  {id:'advanced',t:'Regularly training',s:'Consistent training, comfortable pushing intensity.'}
+];
+const AGE_INFO = [
+  {id:'teen',t:'Under 20',s:'Full range of intensity, extra focus on form fundamentals.'},
+  {id:'adult',t:'20–39',s:'Standard progression and intensity.'},
+  {id:'midlife',t:'40–59',s:'More power and mobility work, slightly longer rest.'},
+  {id:'senior',t:'60+',s:'Balance-forward, lower-impact defaults, conservative progression.'}
+];
+const EQUIP_OPTS = ['none','mat','chair','wall','band','dumbbell','kettlebell','pullupbar','bench'];
+
+function buildOnboarding(){
+  const lvlWrap=document.getElementById('onbLevelOpts');
+  lvlWrap.innerHTML=LEVELS_INFO.map(l=>`<button class="onb-opt" data-lvl="${l.id}"><span class="t">${l.t}</span><span class="s">${l.s}</span></button>`).join('');
+  lvlWrap.querySelectorAll('.onb-opt').forEach(btn=>btn.addEventListener('click',()=>{
+    lvlWrap.querySelectorAll('.onb-opt').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active'); tempProfile.level=btn.dataset.lvl;
+    document.getElementById('onbNext1').disabled=false;
+  }));
+
+  const ageWrap=document.getElementById('onbAgeOpts');
+  ageWrap.innerHTML=AGE_INFO.map(a=>`<button class="onb-opt" data-age="${a.id}"><span class="t">${a.t}</span><span class="s">${a.s}</span></button>`).join('');
+  ageWrap.querySelectorAll('.onb-opt').forEach(btn=>btn.addEventListener('click',()=>{
+    ageWrap.querySelectorAll('.onb-opt').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active'); tempProfile.age=btn.dataset.age;
+    document.getElementById('onbNext2').disabled=false;
+  }));
+
+  const eqWrap=document.getElementById('onbEquipOpts');
+  eqWrap.innerHTML = EQUIP_OPTS.map(e=>`<button class="opt-chip ${e==='none'?'active':''}" data-eq="${e}">${EQUIP_LABELS[e]}</button>`).join('');
+  eqWrap.querySelectorAll('.opt-chip').forEach(btn=>btn.addEventListener('click',()=>{
+    btn.classList.toggle('active');
+    if(btn.dataset.eq==='none') return;
+  }));
+}
+let tempProfile={level:null,age:null};
+
+function initOnboarding(){
+  buildOnboarding();
+  document.getElementById('onbNext1').addEventListener('click',()=>{
+    document.getElementById('onbStep1').classList.remove('active');
+    document.getElementById('onbStep2').classList.add('active');
+    document.getElementById('onbP1').classList.add('done');
+  });
+  document.getElementById('onbNext2').addEventListener('click',()=>{
+    document.getElementById('onbStep2').classList.remove('active');
+    document.getElementById('onbStep3').classList.add('active');
+    document.getElementById('onbP2').classList.add('done');
+  });
+  document.getElementById('onbFinish').addEventListener('click',()=>{
+    const equip=['none'];
+    document.querySelectorAll('#onbEquipOpts .opt-chip.active').forEach(b=>{if(b.dataset.eq!=='none') equip.push(b.dataset.eq);});
+    profile={level:tempProfile.level||'beginner',age:tempProfile.age||'adult',equipment:equip,sound:true,warmupCooldown:true};
+    save(LS.profile,profile);
+    document.getElementById('onbP3').classList.add('done');
+    document.getElementById('onboarding').style.display='none';
+    boot();
+  });
+}
+
+/* =====================================================================
+   WORKOUT GENERATION
+===================================================================== */
+function timingFor(level){
+  if(level==='beginner') return {work:30,rest:30};
+  if(level==='advanced') return {work:45,rest:15};
+  return {work:40,rest:20};
+}
+function seniorSafe(e){ return !(profile.age==='senior' && e.impact==='high'); }
+function equipOk(e){
+  return e.equip.every(eq=>eq==='none' || (profile.equipment||['none']).includes(eq));
+}
+function levelOk(e,userLevel){
+  // include exercises at or one step below the user's level, occasionally allow one step above for variety
+  return LEVEL_ORDER[e.level] <= LEVEL_ORDER[userLevel];
+}
+function poolFor(bp){
+  return EX.filter(e=>bp.filter(e) && equipOk(e) && seniorSafe(e));
+}
+function pickExercises(pool, count){
+  const arr=[...pool];
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return arr.slice(0,Math.min(count,arr.length));
+}
+
+/* ---- Warm-up / cool-down: fixed ~4-5 min bookends added to every generated session ---- */
+const TRANSITION_REST = 6;
+const WARMUP_PLAN = [
+  {id:'march',secs:45},{id:'armcircles',secs:40},{id:'torsotwist',secs:40},
+  {id:'catcow',secs:40},{id:'legswings',secs:45},{id:'sq-bw',secs:40}
+]; // ~4:50 including transitions
+const COOLDOWN_PLAN = [
+  {id:'hamstretch',secs:40},{id:'quadstretch',secs:40},{id:'childspose',secs:45},
+  {id:'spinaltwist',secs:40},{id:'crossbody',secs:30},{id:'boxbreath',secs:60}
+]; // ~4:55 including transitions
+function buildWarmup(){
+  return WARMUP_PLAN.map((w,i)=>{
+    const e=EX.find(x=>x.id===w.id);
+    return {...e, work:w.secs, rest:i<WARMUP_PLAN.length-1?TRANSITION_REST:0, segment:'warmup'};
+  });
+}
+function buildCooldown(){
+  return COOLDOWN_PLAN.map((w,i)=>{
+    const e=EX.find(x=>x.id===w.id);
+    return {...e, work:w.secs, rest:i<COOLDOWN_PLAN.length-1?TRANSITION_REST:0, segment:'cooldown'};
+  });
+}
+function assembleSession(name, bpId, durationMin, lvl, mainExercises){
+  const includeWU = !profile || profile.warmupCooldown!==false;
+  const exercises = includeWU ? [...buildWarmup(),...mainExercises,...buildCooldown()] : mainExercises;
+  const totalSecs = exercises.reduce((s,e)=>s+e.work+e.rest,0);
+  return {
+    name, bpId, durationMin, level:lvl, exercises,
+    mainCount: mainExercises.length,
+    totalMin: Math.max(1,Math.round(totalSecs/60)),
+    hasWarmup: includeWU
+  };
+}
+function buildSessionFromBlueprint(bpId, durationMin){
+  const bp=BLUEPRINTS.find(b=>b.id===bpId);
+  const lvl=(profile&&profile.level)||'moderate';
+  let pool=poolFor(bp).filter(e=>levelOk(e,lvl));
+  if(pool.length<4) pool=poolFor(bp); // fall back to full pool if too restrictive
+  const timing=timingFor(lvl);
+  const cycleSecs=timing.work+timing.rest;
+  const targetSecs=durationMin*60;
+  let count=Math.max(4,Math.round(targetSecs/cycleSecs));
+  count=Math.min(count,pool.length>0?pool.length:count);
+  let chosen=pickExercises(pool,count);
+  if(chosen.length===0) chosen=pickExercises(EX.filter(e=>equipOk(e)&&seniorSafe(e)),count);
+  // if pool smaller than needed, repeat with variety
+  while(chosen.length<count && pool.length>0){ chosen=chosen.concat(pickExercises(pool,count-chosen.length)); }
+  const mainExercises=chosen.map(e=>({...e, work:e.secs&&e.reps==='hold'?Math.min(e.secs,timing.work):timing.work, rest:timing.rest, segment:'main'}));
+  return assembleSession(bp.name, bp.id, durationMin, lvl, mainExercises);
+}
+function buildCustomSession(ids, durationMin){
+  const lvl=(profile&&profile.level)||'moderate';
+  const timing=timingFor(lvl);
+  const mainExercises=ids.map(id=>EX.find(e=>e.id===id)).filter(Boolean).map(e=>({...e,work:timing.work,rest:timing.rest,segment:'main'}));
+  const dur=durationMin||Math.round(mainExercises.length*(timing.work+timing.rest)/60);
+  return assembleSession('Custom Session', null, dur, lvl, mainExercises);
+}
+
+/* Holistic weekly template — 2x strength, 2-3x cardio, daily-leaning mobility, 1 recovery day */
+const WEEK_TEMPLATE = ['fullbody','cardiocond','mobility','upperpush','balancelong','power','recoveryflow'];
+function autoFillWeek(){
+  const lvl=(profile&&profile.level)||'moderate';
+  for(let i=0;i<7;i++){
+    const key=todayKey(i - new Date().getDay());
+    const bpId=WEEK_TEMPLATE[i];
+    const dur = bpId==='recoveryflow' ? 15 : (lvl==='beginner'?15:lvl==='advanced'?30:20);
+    plan[key]={type:'blueprint',bpId,durationMin:dur,name:BLUEPRINTS.find(b=>b.id===bpId).name,status:'pending'};
+  }
+  save(LS.plan,plan);
+  toast('Week planned — 2× strength, cardio, and daily mobility.');
+  renderAll();
+}
+
+/* =====================================================================
+   RENDERING — TODAY
+===================================================================== */
+function ringStyle(pct,color){
+  return `background:conic-gradient(var(--${color}) ${pct}%, var(--surface-3) 0); `;
+}
+function weekStats(){
+  let done=0;
+  for(let i=0;i<7;i++){
+    const key=todayKey(i-new Date().getDay());
+    if(plan[key] && plan[key].status==='done') done++;
+  }
+  return done;
+}
+function computeStreak(){
+  let streak=0;
+  for(let i=0;;i--){
+    const key=todayKey(i);
+    const rec=plan[key];
+    const didSomething = history.some(h=>h.date===key);
+    if(i===0 && !didSomething) { continue; } // today doesn't break streak if not yet done
+    if(!didSomething) break;
+    streak++;
+    if(i<-60) break;
+  }
+  return streak;
+}
+function renderToday(){
+  const now=new Date();
+  const key=todayKey(0);
+  let day=plan[key];
+  if(!day){
+    const lvl=(profile&&profile.level)||'moderate';
+    day={type:'blueprint',bpId:'fullbody',durationMin: lvl==='beginner'?15:lvl==='advanced'?30:20, name:'Full-Body Circuit', status:'pending'};
+    plan[key]=day; save(LS.plan,plan);
+  }
+  document.getElementById('heroDay').textContent=DAYS[now.getDay()].toUpperCase();
+  document.getElementById('heroTitle').textContent=day.type==='rest'?'Rest day':day.name;
+  document.getElementById('heroDur').textContent= day.type==='rest' ? 'Recovery' : day.durationMin+' min';
+  document.getElementById('heroLvl').textContent= (profile&&profile.level) ? profile.level[0].toUpperCase()+profile.level.slice(1) : 'Moderate';
+  const eqCount=(profile&&profile.equipment||['none']).filter(e=>e!=='none').length;
+  document.getElementById('heroEq').textContent = eqCount? eqCount+' tool'+(eqCount>1?'s':'') : 'No equipment';
+  const wuOn = (!profile || profile.warmupCooldown!==false) && day.type!=='rest';
+  document.getElementById('heroWarmup').classList.toggle('hidden', !wuOn);
+
+  const startBtn=document.getElementById('startTodayBtn');
+  startBtn.disabled = day.type==='rest';
+  startBtn.innerHTML = day.type==='rest'
+    ? 'Enjoy your rest day'
+    : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Start session';
+
+  const wk=weekStats();
+  document.getElementById('weekRing').style.cssText=ringStyle(Math.round(wk/7*100),'sage')+'border-radius:50%;';
+  document.getElementById('weekRingNum').textContent=wk+'/7';
+
+  document.getElementById('statWeek').textContent=wk+'/7';
+  document.getElementById('statTotal').textContent=history.length;
+  document.getElementById('statMinutes').textContent=history.reduce((s,h)=>s+(h.durationMin||0),0);
+
+  const streak=computeStreak();
+  document.getElementById('streakVal').textContent=streak;
+
+  const greetHour=now.getHours();
+  document.getElementById('todayGreeting').textContent = greetHour<12?'Good morning':greetHour<18?"Let's move":'Evening session';
+  document.getElementById('todaySub').textContent = day.type==='rest' ? 'Scheduled recovery — light stretching is always welcome.' : 'Tap start when you\'re ready, or swap for something else.';
+
+  // blueprint quickstart row
+  const row=document.getElementById('blueprintRow');
+  row.innerHTML = BLUEPRINTS.map(bp=>bpCardHTML(bp)).join('');
+  row.querySelectorAll('.bp-card').forEach(c=>c.addEventListener('click',()=>openBlueprintSheet(c.dataset.id)));
+}
+function bpCardHTML(bp){
+  const meta=CAT_META[bp.cat]||CAT_META.strength;
+  return `<button class="bp-card" data-id="${bp.id}">
+    <div class="tag" style="background:var(--${meta.color}-dim);color:var(--${meta.color});"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${meta.icon}</svg></div>
+    <h4>${bp.name}</h4>
+    <div class="desc">${bp.desc}</div>
+    <div class="foot">${poolFor(bp).length} exercises</div>
+  </button>`;
+}
+
+/* =====================================================================
+   RENDERING — LIBRARY
+===================================================================== */
+let libFilters={goal:'all',level:'all',equip:'mine',search:''};
+const GOAL_FILTERS=[{id:'all',t:'All'},{id:'strength',t:'Strength'},{id:'cardio',t:'Cardio'},{id:'flex',t:'Flexibility'},{id:'recovery',t:'Recovery'}];
+const LEVEL_FILTERS=[{id:'all',t:'All levels'},{id:'beginner',t:'Beginner'},{id:'moderate',t:'Moderate'},{id:'advanced',t:'Advanced'}];
+
+function renderLibrary(){
+  document.getElementById('goalChips').innerHTML=GOAL_FILTERS.map(g=>`<button class="fchip ${libFilters.goal===g.id?'active':''}" data-goal="${g.id}">${g.t}</button>`).join('');
+  document.getElementById('levelChips').innerHTML=LEVEL_FILTERS.map(l=>`<button class="fchip ${libFilters.level===l.id?'active':''}" data-level="${l.id}">${l.t}</button>`).join('');
+  document.getElementById('equipChips').innerHTML=
+    `<button class="fchip ${libFilters.equip==='mine'?'active':''}" data-equip="mine">My equipment</button>`+
+    `<button class="fchip ${libFilters.equip==='all'?'active':''}" data-equip="all">Show everything</button>`;
+
+  document.querySelectorAll('#goalChips .fchip').forEach(b=>b.addEventListener('click',()=>{libFilters.goal=b.dataset.goal;renderLibrary();}));
+  document.querySelectorAll('#levelChips .fchip').forEach(b=>b.addEventListener('click',()=>{libFilters.level=b.dataset.level;renderLibrary();}));
+  document.querySelectorAll('#equipChips .fchip').forEach(b=>b.addEventListener('click',()=>{libFilters.equip=b.dataset.equip;renderLibrary();}));
+
+  document.getElementById('libBlueprintRow').innerHTML=BLUEPRINTS.map(bp=>bpCardHTML(bp)).join('');
+  document.getElementById('libBlueprintRow').querySelectorAll('.bp-card').forEach(c=>c.addEventListener('click',()=>openBlueprintSheet(c.dataset.id)));
+
+  let list=EX.filter(e=>{
+    if(libFilters.goal!=='all' && e.cat!==libFilters.goal) return false;
+    if(libFilters.level!=='all' && e.level!==libFilters.level) return false;
+    if(libFilters.equip==='mine' && !equipOk(e)) return false;
+    if(libFilters.search && !e.name.toLowerCase().includes(libFilters.search.toLowerCase())) return false;
+    return true;
+  });
+  document.getElementById('libCount').textContent=list.length+' exercise'+(list.length!==1?'s':'');
+  document.getElementById('exList').innerHTML = list.map(exRowHTML).join('') || `<div class="empty-state">No exercises match these filters yet. Try widening your equipment or level.</div>`;
+  document.querySelectorAll('#exList .ex-row').forEach(r=>r.addEventListener('click',()=>openExerciseDetail(r.dataset.id)));
+}
+function exRowHTML(e){
+  const meta=CAT_META[e.cat]||CAT_META.strength;
+  return `<button class="ex-row" data-id="${e.id}">
+    <span class="ex-dot" style="background:var(--${meta.color});"></span>
+    <div class="body">
+      <div class="name">${e.name}</div>
+      <div class="meta"><span class="lvl-badge lvl-${e.level}">${e.level}</span> · ${e.equip.map(x=>EQUIP_LABELS[x]).join(', ')}</div>
+    </div>
+    <div class="secs mono">${e.secs}s</div>
+  </button>`;
+}
+
+/* =====================================================================
+   RENDERING — PLAN
+===================================================================== */
+function renderPlan(){
+  const wrap=document.getElementById('weekList');
+  const startOfWeek=new Date(); startOfWeek.setDate(startOfWeek.getDate()-startOfWeek.getDay());
+  let html='';
+  for(let i=0;i<7;i++){
+    const d=new Date(startOfWeek); d.setDate(startOfWeek.getDate()+i);
+    const key=d.toISOString().slice(0,10);
+    const isToday = key===todayKey(0);
+    const rec=plan[key];
+    const title = rec ? (rec.type==='rest'?'Rest day':rec.name) : 'Not planned';
+    const sub = rec ? (rec.type==='rest'?'Recovery scheduled':`${rec.durationMin} min · ${rec.type==='custom'?rec.exerciseIds.length+' exercises':'blueprint'}`) : 'Tap to plan this day';
+    html+=`<button class="day-card ${isToday?'is-today':''} ${rec&&rec.status==='done'?'is-done':''}" data-key="${key}">
+      <div class="day-mark"><span class="d">${DAYS[d.getDay()].slice(0,3)}</span><span class="n">${d.getDate()}</span></div>
+      <div class="day-body"><div class="t">${title}</div><div class="s">${sub}</div></div>
+      <span class="done-check ${rec&&rec.status==='done'?'checked':''}" data-toggle="${key}">${rec&&rec.status==='done'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>':''}</span>
+    </button>`;
+  }
+  wrap.innerHTML=html;
+  wrap.querySelectorAll('.done-check').forEach(chk=>chk.addEventListener('click',(ev)=>{
+    ev.stopPropagation();
+    const key=chk.dataset.toggle;
+    if(!plan[key] || plan[key].type==='rest') return;
+    const isDone = plan[key].status==='done';
+    plan[key].status = isDone?'pending':'done';
+    if(!isDone){
+      const names=mainNamesForPlanEntry(plan[key]);
+      history.push({date:key,name:plan[key].name,durationMin:plan[key].durationMin,exerciseCount:names.length||(plan[key].exerciseIds||[]).length||6,exercises:names.map(n=>({name:n,segment:'main'}))});
+      save(LS.history,history);
+    } else {
+      history = history.filter(h=>!(h.date===key && h.name===plan[key].name));
+      save(LS.history,history);
+    }
+    save(LS.plan,plan);
+    renderAll();
+  }));
+  wrap.querySelectorAll('.day-card').forEach(card=>card.addEventListener('click',()=>{
+    const key=card.dataset.key;
+    const isPast = key<todayKey(0);
+    if(isPast && plan[key] && plan[key].status==='done') openHistoryDay(key);
+    else openDayEditor(key);
+  }));
+}
+function mainNamesForPlanEntry(rec){
+  if(!rec) return [];
+  if(rec.type==='custom') return (rec.exerciseIds||[]).map(id=>{const e=EX.find(x=>x.id===id);return e?e.name:null;}).filter(Boolean);
+  if(rec.type==='blueprint' && rec.bpId){
+    const s=buildSessionFromBlueprint(rec.bpId, rec.durationMin);
+    return s.exercises.filter(e=>(e.segment||'main')==='main').map(e=>e.name);
+  }
+  return [];
+}
+
+/* =====================================================================
+   RENDERING — PROGRESS
+===================================================================== */
+function renderProgress(){
+  document.getElementById('pStreak').textContent=computeStreak();
+  document.getElementById('pTotal').textContent=history.length;
+  document.getElementById('pMinutes').textContent=history.reduce((s,h)=>s+(h.durationMin||0),0);
+
+  const grid=document.getElementById('heatGrid');
+  let cells='';
+  const days=35;
+  const byDate={}; history.forEach(h=>{byDate[h.date]=(byDate[h.date]||0)+1;});
+  for(let i=days-1;i>=0;i--){
+    const key=todayKey(-i);
+    const c=byDate[key]||0;
+    const lvl=c===0?0:c===1?1:c===2?2:3;
+    cells+=`<div class="heat-cell" data-lvl="${lvl}" data-date="${key}" title="${key}" style="${c===0?'cursor:default;':''}"></div>`;
+  }
+  grid.innerHTML=cells;
+  grid.querySelectorAll('.heat-cell').forEach(c=>{
+    if((byDate[c.dataset.date]||0)>0) c.addEventListener('click',()=>openHistoryDay(c.dataset.date));
+  });
+
+  const hist=document.getElementById('histList');
+  if(history.length===0){
+    hist.innerHTML=`<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+      Nothing logged yet — complete a session and it'll show up here.
+    </div>`;
+    return;
+  }
+  const recent=[...history].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,20);
+  hist.innerHTML = recent.map(h=>`<div class="hist-item" data-date="${h.date}">
+      <div><div class="t">${h.name}</div><div class="d">${new Date(h.date+'T00:00:00').toDateString()}</div></div>
+      <div class="m">${h.durationMin} min<br>${h.exerciseCount||''} ex</div>
+    </div>`).join('');
+  hist.querySelectorAll('.hist-item').forEach(item=>item.addEventListener('click',()=>openHistoryDay(item.dataset.date)));
+}
+
+/* -- Day detail: what was done on a given date -- */
+function groupExercisesBySegment(list){
+  const g={warmup:[],main:[],cooldown:[]};
+  (list||[]).forEach(e=>{ const seg=e.segment||'main'; if(!g[seg]) g[seg]=[]; g[seg].push(e.name); });
+  return g;
+}
+function openHistoryDay(date){
+  const entries=history.filter(h=>h.date===date);
+  const d=new Date(date+'T00:00:00');
+  document.getElementById('hdTitle').textContent=d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
+  if(entries.length===0){
+    document.getElementById('hdSub').textContent='Nothing logged for this day.';
+    document.getElementById('hdList').innerHTML='';
+    openOverlay('historyDayOverlay');
+    return;
+  }
+  const totalMin=entries.reduce((s,h)=>s+(h.durationMin||0),0);
+  document.getElementById('hdSub').textContent=`${entries.length} session${entries.length>1?'s':''} · ${totalMin} min total`;
+  document.getElementById('hdList').innerHTML=entries.map(h=>{
+    const groups=groupExercisesBySegment(h.exercises);
+    let body='';
+    [['warmup','Warm-up'],['main','Workout'],['cooldown','Cool-down']].forEach(([seg,label])=>{
+      if(groups[seg] && groups[seg].length){
+        body+=`<div class="hd-group"><div class="hd-group-label">${label}</div><div class="hd-chips">${groups[seg].map(n=>`<span class="hd-chip ${seg}">${n}</span>`).join('')}</div></div>`;
+      }
+    });
+    if(!body) body=`<div class="hd-group"><div class="hd-chips"><span class="hd-chip">${h.exerciseCount||'?'} exercises · details not recorded for this older entry</span></div></div>`;
+    return `<div class="hd-session"><div class="hd-head"><span class="t">${h.name}</span><span class="m">${h.durationMin} min</span></div>${body}</div>`;
+  }).join('');
+  openOverlay('historyDayOverlay');
+}
+
+const RENDERERS = {today:renderToday, library:renderLibrary, plan:renderPlan, progress:renderProgress};
+let activeView='today';
+function renderAll(){ RENDERERS[activeView](); }
+
+/* =====================================================================
+   VIEW SWITCHING
+===================================================================== */
+document.querySelectorAll('.navbtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));
+    activeView=btn.dataset.view;
+    RENDERERS[activeView]();
+    document.getElementById('view-'+activeView).classList.remove('hidden');
+    window.scrollTo(0,0);
+  });
+});
+
+/* =====================================================================
+   OVERLAYS
+===================================================================== */
+function openOverlay(id){ document.getElementById(id).classList.add('show'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>closeOverlay(b.dataset.close)));
+document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',(e)=>{if(e.target===ov) ov.classList.remove('show');}));
+
+/* -- Exercise detail -- */
+let currentExId=null;
+function openExerciseDetail(id){
+  const e=EX.find(x=>x.id===id); if(!e) return;
+  currentExId=id;
+  const meta=CAT_META[e.cat]||CAT_META.strength;
+  document.getElementById('exTag').style.cssText=`background:var(--${meta.color}-dim);color:var(--${meta.color});`;
+  document.getElementById('exTag').innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${meta.icon}</svg>`;
+  document.getElementById('exName').textContent=e.name;
+  document.getElementById('exBadges').innerHTML=`<span class="lvl-badge lvl-${e.level}">${e.level}</span><span class="lvl-badge" style="background:var(--surface-3);color:var(--text-dim);">${e.equip.map(x=>EQUIP_LABELS[x]).join(', ')}</span>`;
+  document.getElementById('exCue').textContent=e.cue;
+  const modBlock=document.getElementById('exModBlock');
+  if(e.mod){ modBlock.classList.remove('hidden'); document.getElementById('exMod').textContent=e.mod; } else { modBlock.classList.add('hidden'); }
+  document.getElementById('exDose').textContent=`${e.secs} seconds of work · ${e.reps}`;
+  openOverlay('exOverlay');
+}
+document.getElementById('exStartSolo').addEventListener('click',()=>{
+  closeOverlay('exOverlay');
+  const e=EX.find(x=>x.id===currentExId);
+  const timing=timingFor((profile&&profile.level)||'moderate');
+  startSession({name:e.name,durationMin:1,exercises:[{...e,work:timing.work,rest:0}]});
+});
+
+/* -- Blueprint sheet -- */
+let currentBpId=null, currentBpDuration=20, currentAssignKey=null;
+function openBlueprintSheet(bpId, forDay){
+  currentBpId=bpId; currentAssignKey=forDay||null;
+  const bp=BLUEPRINTS.find(b=>b.id===bpId);
+  document.getElementById('bpTitle').textContent=bp.name;
+  const wuNote = (!profile || profile.warmupCooldown!==false) ? ' Every session bookends with a ~5 min warm-up and cool-down automatically — change this in Settings.' : '';
+  document.getElementById('bpDesc').textContent=bp.desc+` · ${poolFor(bp).length} exercises available with your equipment.`+wuNote;
+  const durs=[10,15,20,30,45];
+  const lvl=(profile&&profile.level)||'moderate';
+  currentBpDuration = lvl==='beginner'?15:lvl==='advanced'?30:20;
+  document.getElementById('bpDurations').innerHTML=durs.map(d=>`<button class="opt-chip ${d===currentBpDuration?'active':''}" data-dur="${d}">${d} min</button>`).join('');
+  document.querySelectorAll('#bpDurations .opt-chip').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#bpDurations .opt-chip').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); currentBpDuration=parseInt(b.dataset.dur,10);
+  }));
+  const assignWrap=document.getElementById('bpAssign');
+  const today=todayKey(0);
+  assignWrap.innerHTML=`<button class="opt-chip active" data-assign="now">Start now</button><button class="opt-chip" data-assign="today">Today's plan</button>`;
+  assignWrap.querySelectorAll('.opt-chip').forEach(b=>b.addEventListener('click',()=>{
+    assignWrap.querySelectorAll('.opt-chip').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  }));
+  document.getElementById('bpConfirm').onclick=()=>{
+    const mode=assignWrap.querySelector('.opt-chip.active').dataset.assign;
+    const session=buildSessionFromBlueprint(currentBpId,currentBpDuration);
+    if(mode==='now'){
+      closeOverlay('bpOverlay');
+      startSession(session);
+    } else {
+      const key = currentAssignKey || today;
+      plan[key]={type:'blueprint',bpId:currentBpId,durationMin:currentBpDuration,name:BLUEPRINTS.find(b=>b.id===currentBpId).name,status:'pending'};
+      save(LS.plan,plan);
+      closeOverlay('bpOverlay'); closeOverlay('dayOverlay');
+      toast('Added to your plan.');
+      renderAll();
+    }
+  };
+  openOverlay('bpOverlay');
+}
+
+/* -- Day editor -- */
+let currentDayKey=null;
+function openDayEditor(key){
+  currentDayKey=key;
+  const d=new Date(key+'T00:00:00');
+  document.getElementById('dayTitle').textContent=DAYS[d.getDay()]+' · '+d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  document.getElementById('dayBlueprints').innerHTML=BLUEPRINTS.map(bp=>`<button class="opt-chip" data-bp="${bp.id}">${bp.name}</button>`).join('');
+  document.querySelectorAll('#dayBlueprints .opt-chip').forEach(b=>b.addEventListener('click',()=>{
+    openBlueprintSheet(b.dataset.bp, currentDayKey);
+  }));
+  openOverlay('dayOverlay');
+}
+document.getElementById('dayRest').addEventListener('click',()=>{
+  plan[currentDayKey]={type:'rest',status:'pending'};
+  save(LS.plan,plan); closeOverlay('dayOverlay'); renderAll(); toast('Set as a rest day.');
+});
+document.getElementById('dayCustom').addEventListener('click',()=>{
+  closeOverlay('dayOverlay'); openCustomBuilder(currentDayKey);
+});
+
+/* -- Custom builder -- */
+let customSelection=[];
+function openCustomBuilder(forDayKey){
+  customSelection=[];
+  customAssignKey=forDayKey||null;
+  document.getElementById('customSearch').value='';
+  renderCustomList('');
+  renderCustomSelected();
+  openOverlay('customOverlay');
+}
+let customAssignKey=null;
+function renderCustomList(q){
+  let list=EX.filter(e=>e.name.toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('customList').innerHTML=list.map(e=>{
+    const sel=customSelection.includes(e.id);
+    return `<button class="ex-row" style="${sel?'border-color:var(--sage);':''}" data-id="${e.id}">
+      <span class="ex-dot" style="background:var(--${(CAT_META[e.cat]||CAT_META.strength).color});"></span>
+      <div class="body"><div class="name">${e.name}</div><div class="meta"><span class="lvl-badge lvl-${e.level}">${e.level}</span></div></div>
+      <div class="secs mono">${sel?'✓':'+'}</div>
+    </button>`;
+  }).join('') || `<div class="empty-state">No matches.</div>`;
+  document.querySelectorAll('#customList .ex-row').forEach(r=>r.addEventListener('click',()=>{
+    const id=r.dataset.id;
+    const idx=customSelection.indexOf(id);
+    if(idx>-1) customSelection.splice(idx,1); else customSelection.push(id);
+    renderCustomList(document.getElementById('customSearch').value);
+    renderCustomSelected();
+  }));
+}
+function renderCustomSelected(){
+  const wrap=document.getElementById('customSelectedWrap');
+  document.getElementById('customCount').textContent=customSelection.length;
+  if(customSelection.length===0){ wrap.classList.add('hidden'); return; }
+  wrap.classList.remove('hidden');
+  document.getElementById('customSelected').innerHTML=customSelection.map(id=>{
+    const e=EX.find(x=>x.id===id);
+    return `<span class="fchip active" style="white-space:nowrap;">${e.name}</span>`;
+  }).join('');
+}
+document.getElementById('customSearch').addEventListener('input',(e)=>renderCustomList(e.target.value));
+document.getElementById('customStart').addEventListener('click',()=>{
+  if(customSelection.length===0){ toast('Pick at least one exercise.'); return; }
+  const session=buildCustomSession(customSelection);
+  if(customAssignKey){
+    plan[customAssignKey]={type:'custom',exerciseIds:[...customSelection],durationMin:session.durationMin,name:'Custom Session',status:'pending'};
+    save(LS.plan,plan);
+    closeOverlay('customOverlay');
+    toast('Custom session added to your plan.');
+    renderAll();
+  } else {
+    closeOverlay('customOverlay');
+    startSession(session);
+  }
+});
+
+/* =====================================================================
+   SETTINGS
+===================================================================== */
+function openSettings(){
+  document.getElementById('setLevel').innerHTML=LEVELS_INFO.map(l=>`<button class="opt-chip ${profile.level===l.id?'active':''}" data-lvl="${l.id}">${l.t}</button>`).join('');
+  document.getElementById('setAge').innerHTML=AGE_INFO.map(a=>`<button class="opt-chip ${profile.age===a.id?'active':''}" data-age="${a.id}">${a.t}</button>`).join('');
+  document.getElementById('setEquip').innerHTML=EQUIP_OPTS.map(e=>`<button class="opt-chip ${(profile.equipment||[]).includes(e)?'active':''}" data-eq="${e}">${EQUIP_LABELS[e]}</button>`).join('');
+  document.getElementById('setWarmup').innerHTML=`<button class="opt-chip ${profile.warmupCooldown!==false?'active':''}" data-wu="on">Include (~9 min)</button><button class="opt-chip ${profile.warmupCooldown===false?'active':''}" data-wu="off">Skip it</button>`;
+  document.getElementById('setSound').innerHTML=`<button class="opt-chip ${profile.sound!==false?'active':''}" data-snd="on">On</button><button class="opt-chip ${profile.sound===false?'active':''}" data-snd="off">Off</button>`;
+  document.querySelectorAll('#setLevel .opt-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#setLevel .opt-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
+  document.querySelectorAll('#setAge .opt-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#setAge .opt-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
+  document.querySelectorAll('#setEquip .opt-chip').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.eq!=='none') b.classList.toggle('active'); }));
+  document.querySelectorAll('#setWarmup .opt-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#setWarmup .opt-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
+  document.querySelectorAll('#setSound .opt-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#setSound .opt-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
+  openOverlay('settingsOverlay');
+}
+document.getElementById('settingsBtn').addEventListener('click',openSettings);
+document.getElementById('setSave').addEventListener('click',()=>{
+  profile.level=document.querySelector('#setLevel .opt-chip.active').dataset.lvl;
+  profile.age=document.querySelector('#setAge .opt-chip.active').dataset.age;
+  const equip=['none'];
+  document.querySelectorAll('#setEquip .opt-chip.active').forEach(b=>{if(b.dataset.eq!=='none') equip.push(b.dataset.eq);});
+  profile.equipment=equip;
+  profile.warmupCooldown = document.querySelector('#setWarmup .opt-chip.active').dataset.wu==='on';
+  profile.sound = document.querySelector('#setSound .opt-chip.active').dataset.snd==='on';
+  save(LS.profile,profile);
+  closeOverlay('settingsOverlay');
+  toast('Settings saved.');
+  renderAll();
+});
+document.getElementById('setReset').addEventListener('click',()=>{
+  if(!confirm('This clears your profile, plan, and history. Continue?')) return;
+  localStorage.removeItem(LS.profile); localStorage.removeItem(LS.plan); localStorage.removeItem(LS.history);
+  location.reload();
+});
+
+/* =====================================================================
+   TODAY PAGE ACTIONS
+===================================================================== */
+document.getElementById('startTodayBtn').addEventListener('click',()=>{
+  const key=todayKey(0); const day=plan[key];
+  if(!day || day.type==='rest') return;
+  let session;
+  if(day.type==='custom') session=buildCustomSession(day.exerciseIds,day.durationMin);
+  else session=buildSessionFromBlueprint(day.bpId,day.durationMin);
+  startSession(session, key);
+});
+document.getElementById('swapTodayBtn').addEventListener('click',()=>openDayEditor(todayKey(0)));
+document.getElementById('surpriseBtn').addEventListener('click',()=>{
+  const bp=BLUEPRINTS[Math.floor(Math.random()*BLUEPRINTS.length)];
+  const durs=[10,15,20];
+  const dur=durs[Math.floor(Math.random()*durs.length)];
+  const session=buildSessionFromBlueprint(bp.id,dur);
+  toast('Surprise session — here we go!');
+  startSession(session);
+});
+document.getElementById('autoFillBtn').addEventListener('click',autoFillWeek);
+document.getElementById('clearWeekBtn').addEventListener('click',()=>{
+  for(let i=0;i<7;i++){ const key=todayKey(i-new Date().getDay()); delete plan[key]; }
+  save(LS.plan,plan); renderAll(); toast('Week cleared.');
+});
+
+/* =====================================================================
+   SESSION RUNNER ENGINE
+===================================================================== */
+let runnerState=null; // {session, idx, phase:'work'|'rest', secsLeft, timerId, paused, planKey}
+function startSession(session, planKey){
+  if(!session.exercises || session.exercises.length===0){ toast('No exercises match your current filters.'); return; }
+  runnerState={session, idx:0, phase:'work', secsLeft:session.exercises[0].work, paused:false, planKey:planKey||null};
+  document.getElementById('completeWrap').classList.remove('show');
+  buildRunnerDots();
+  renderRunnerFrame();
+  document.getElementById('runner').classList.add('show');
+  clearInterval(runnerState.timerId);
+  runnerState.timerId=setInterval(tickRunner,1000);
+}
+function buildRunnerDots(){
+  const wrap=document.getElementById('runnerDots');
+  wrap.innerHTML=runnerState.session.exercises.map((e,i)=>`<span class="d" data-i="${i}"></span>`).join('');
+  updateDots();
+}
+function updateDots(){
+  document.querySelectorAll('#runnerDots .d').forEach((d,i)=>{
+    d.classList.remove('past','now');
+    if(i<runnerState.idx) d.classList.add('past');
+    else if(i===runnerState.idx) d.classList.add('now');
+  });
+}
+function segIndexLabel(session, idx){
+  const ex=session.exercises[idx];
+  const seg=ex.segment||'main';
+  const segList=session.exercises.filter(e=>(e.segment||'main')===seg);
+  const posInSeg=segList.indexOf(ex)+1;
+  const segName=seg==='warmup'?'Warm-up':seg==='cooldown'?'Cool-down':'Exercise';
+  return `${segName} ${posInSeg}/${segList.length}`;
+}
+function renderRunnerFrame(){
+  const {session,idx,phase,secsLeft}=runnerState;
+  const ex=session.exercises[idx];
+  const seg=ex.segment||'main';
+  const workLabel=seg==='warmup'?'Warm-up':seg==='cooldown'?'Cool-down':'Work';
+  const workColor=seg==='warmup'?'gold':seg==='cooldown'?'sage':'ember';
+  document.getElementById('runnerCount').textContent=segIndexLabel(session,idx);
+  document.getElementById('phaseLabel').textContent = phase==='work'?workLabel:'Rest';
+  document.getElementById('phaseLabel').style.color = phase==='work' ? `var(--${workColor})` : 'var(--sage)';
+  document.getElementById('ringTime').textContent=fmtTime(secsLeft);
+  document.getElementById('ringSub').textContent = phase==='work' ? ex.reps : 'get ready';
+  const total = phase==='work'?ex.work:ex.rest;
+  const pct = total>0 ? Math.round((1-secsLeft/total)*100) : 100;
+  document.getElementById('ringBig').style.cssText = ringStyle(pct, phase==='work'?workColor:'sage');
+  document.getElementById('runnerExName').textContent = phase==='work' ? ex.name : 'Rest';
+  document.getElementById('runnerExCue').textContent = phase==='work' ? ex.cue : (session.exercises[idx+1] ? 'Get ready for '+session.exercises[idx+1].name : 'Almost there.');
+  const next=session.exercises[idx+1];
+  let nextTag='';
+  if(next){
+    const nextSeg=next.segment||'main';
+    if(nextSeg!==seg) nextTag = nextSeg==='warmup'?' (warm-up)':nextSeg==='cooldown'?' (cool-down)':' (main workout)';
+  }
+  document.getElementById('runnerNext').textContent = next ? `NEXT — ${next.name} · ${next.work}s${nextTag}` : 'FINAL MOVE';
+  updateDots();
+}
+function fmtTime(s){ const m=Math.floor(s/60), r=s%60; return String(m).padStart(2,'0')+':'+String(r).padStart(2,'0'); }
+function tickRunner(){
+  if(!runnerState || runnerState.paused) return;
+  runnerState.secsLeft--;
+  if(runnerState.secsLeft<=3 && runnerState.secsLeft>0) beep(440,0.08,0.04);
+  if(runnerState.secsLeft<=0){
+    advancePhase();
+  } else {
+    renderRunnerFrame();
+  }
+}
+function advancePhase(){
+  const {session}=runnerState;
+  if(runnerState.phase==='work'){
+    beep(660,0.15,0.06);
+    if(runnerState.idx>=session.exercises.length-1){ finishSession(); return; }
+    if(session.exercises[runnerState.idx].rest>0){
+      runnerState.phase='rest'; runnerState.secsLeft=session.exercises[runnerState.idx].rest;
+    } else {
+      runnerState.idx++; runnerState.phase='work'; runnerState.secsLeft=session.exercises[runnerState.idx].work;
+    }
+  } else {
+    beep(880,0.18,0.06);
+    runnerState.idx++;
+    if(runnerState.idx>=session.exercises.length){ finishSession(); return; }
+    runnerState.phase='work'; runnerState.secsLeft=session.exercises[runnerState.idx].work;
+  }
+  renderRunnerFrame();
+}
+document.getElementById('runnerPause').addEventListener('click',()=>{
+  runnerState.paused=!runnerState.paused;
+  document.getElementById('pauseIcon').innerHTML = runnerState.paused
+    ? '<path d="M8 5v14l11-7z"/>'
+    : '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>';
+});
+document.getElementById('runnerSkip').addEventListener('click',()=>{ runnerState.secsLeft=1; tickRunner(); });
+document.getElementById('runnerPrev').addEventListener('click',()=>{
+  if(runnerState.idx>0){ runnerState.idx--; runnerState.phase='work'; runnerState.secsLeft=runnerState.session.exercises[runnerState.idx].work; renderRunnerFrame(); }
+});
+document.getElementById('runnerMute').addEventListener('click',()=>{
+  profile.sound = profile.sound===false ? true : false;
+  save(LS.profile,profile);
+  document.getElementById('muteWave').style.opacity = profile.sound===false?'0.25':'1';
+  toast(profile.sound===false?'Sound off':'Sound on');
+});
+document.getElementById('runnerQuit').addEventListener('click',()=>{
+  if(runnerState.idx>0 && !confirm('End this session early? Progress so far will not be logged.')) return;
+  clearInterval(runnerState.timerId);
+  document.getElementById('runner').classList.remove('show');
+  runnerState=null;
+});
+function finishSession(){
+  clearInterval(runnerState.timerId);
+  const {session,planKey}=runnerState;
+  const key=todayKey(0);
+  const loggedMin = session.totalMin || session.durationMin;
+  const loggedCount = session.mainCount || session.exercises.length;
+  const exerciseLog = session.exercises.map(e=>({name:e.name,segment:e.segment||'main'}));
+  history.push({date:key,name:session.name,durationMin:loggedMin,exerciseCount:loggedCount,exercises:exerciseLog});
+  save(LS.history,history);
+  const usedKey = planKey || key;
+  if(plan[usedKey]) plan[usedKey].status='done';
+  else plan[usedKey]={type:'blueprint',bpId:session.bpId,durationMin:session.durationMin,name:session.name,status:'done'};
+  save(LS.plan,plan);
+  document.getElementById('cMinutes').textContent=loggedMin;
+  document.getElementById('cExercises').textContent=loggedCount;
+  document.getElementById('cStreak').textContent=computeStreak();
+  document.getElementById('completeWrap').classList.add('show');
+  renderAll();
+}
+document.getElementById('completeClose').addEventListener('click',()=>{
+  document.getElementById('completeWrap').classList.remove('show');
+  document.getElementById('runner').classList.remove('show');
+  runnerState=null;
+});
+
+/* =====================================================================
+   PWA — best-effort manifest (works once hosted over https)
+===================================================================== */
+try{
+  const manifest={
+    name:'Kinetic — Adaptive Training', short_name:'Kinetic', start_url:'.', display:'standalone',
+    background_color:'#101314', theme_color:'#101314',
+    icons:[{src:'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' rx=\'22\' fill=\'%23101314\'/%3E%3Cpath d=\'M30 20 L30 80 M30 50 L70 20 M30 50 L70 80\' stroke=\'%23ff7a45\' stroke-width=\'9\' fill=\'none\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E',sizes:'100x100',type:'image/svg+xml'}]
+  };
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+  const link=document.createElement('link'); link.rel='manifest'; link.href=URL.createObjectURL(blob);
+  document.head.appendChild(link);
+}catch(e){}
+
+/* =====================================================================
+   BOOT
+===================================================================== */
+function boot(){
+  renderAll();
+}
+if(!profile){
+  initOnboarding();
+} else {
+  document.getElementById('onboarding').style.display='none';
+  boot();
+}
+})();
+</script>
+</body>
+</html>
