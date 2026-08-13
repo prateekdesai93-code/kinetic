@@ -201,6 +201,9 @@
   .hd-chip{font-size:12px;background:var(--surface-3);border-radius:var(--r-full);padding:5px 11px;color:var(--text);}
   .hd-chip.warmup{color:var(--gold);}
   .hd-chip.cooldown{color:var(--sage);}
+  .track-row{display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:var(--r-sm);padding:9px 12px;}
+  .track-row .n{flex:1;min-width:0;font-size:12.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .track-row button{flex:none;color:var(--text-faint);background:none;border:none;font-size:16px;line-height:1;padding:2px 4px;}
 
   /* ---------- Bottom nav ---------- */
   .bottomnav{
@@ -353,7 +356,7 @@
         <div class="hero-day" id="heroDay">MONDAY</div>
         <div class="hero-title" id="heroTitle">Full-Body Circuit</div>
         <div class="hero-meta">
-          <span class="chip" id="heroDur">20 min</span>
+          <button class="chip" id="heroDur" style="border:none;-webkit-appearance:none;appearance:none;background:var(--ember-dim);color:var(--ember);font-family:inherit;">20 min</button>
           <span class="chip" id="heroLvl">Moderate</span>
           <span class="chip" id="heroEq">No equipment</span>
           <span class="chip hidden" id="heroWarmup" style="color:var(--gold);">+ warm-up/cool-down</span>
@@ -386,6 +389,11 @@
   </div>
 
   <div class="section">
+    <div class="section-head"><h3>⭐ Celebrity-Inspired</h3></div>
+    <div class="card-row" id="celebRow"></div>
+  </div>
+
+  <div class="section">
     <div class="section-head"><h3>Quick start blueprints</h3></div>
     <div class="card-row" id="blueprintRow"></div>
   </div>
@@ -393,7 +401,7 @@
   <div class="section">
     <div class="section-head"><h3>Why this plan</h3></div>
     <div class="view-sub" style="margin-top:0;">
-      Built around a holistic weekly rhythm — strength work twice a week, cardio conditioning two to three times, and short daily mobility — the balance current training guidance points to for building strength, protecting joints, and recovering well, at any age.
+      Built around a holistic weekly rhythm — strength work twice a week, cardio conditioning two to three times, and short daily mobility — the balance current training guidance points to for building strength, protecting joints, and recovering well, at any age. It's also close to what trainers working with well-known clients have publicly described using in 2026.
     </div>
   </div>
 </main>
@@ -416,6 +424,11 @@
   <div class="chip-scroll" id="equipChips"></div>
 
   <div class="section" style="margin-top:6px;">
+    <div class="section-head"><h3>⭐ Celebrity-Inspired</h3></div>
+    <div class="card-row" id="libCelebRow"></div>
+  </div>
+
+  <div class="section">
     <div class="section-head"><h3>Session blueprints</h3></div>
     <div class="card-row" id="libBlueprintRow"></div>
   </div>
@@ -568,9 +581,23 @@
     <div class="opt-grid" id="setEquip"></div>
     <div class="field-label">Warm-up &amp; cool-down</div>
     <div class="opt-grid" id="setWarmup"></div>
-    <div class="field-label">Sound cues</div>
+    <div class="field-label">Voice coaching</div>
+    <div class="opt-grid" id="setVoice"></div>
+    <div class="field-label">Workout music</div>
+    <div class="opt-grid" id="setMusic"></div>
+    <div class="opt-grid" id="setMusicSource" style="margin-top:8px;"></div>
+    <div id="trackManager" style="margin-top:10px;">
+      <div style="display:flex;gap:8px;">
+        <input type="url" id="trackUrlInput" placeholder="Paste a Pixabay (or any) direct track link…" style="flex:1;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 12px;color:var(--text);font-size:13px;font-family:inherit;">
+        <button class="btn btn-ghost btn-sm" id="addTrackBtn">Add</button>
+      </div>
+      <div class="view-sub" style="margin-top:6px;font-size:12px;">Download the MP3 from pixabay.com/music, host it (e.g. next to this file on GitHub Pages), then paste that direct link here.</div>
+      <div id="trackList" style="margin-top:10px;display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+    <div class="field-label">Sound cues (beeps)</div>
     <div class="opt-grid" id="setSound"></div>
-    <button class="btn btn-primary btn-block" style="margin-top:20px;" id="setSave">Save settings</button>
+    <button class="btn btn-ghost btn-block" style="margin-top:18px;" id="testSoundBtn">🔊 Test sound</button>
+    <button class="btn btn-primary btn-block" style="margin-top:10px;" id="setSave">Save settings</button>
     <button class="btn btn-ghost btn-block" style="margin-top:10px;" id="setReset">Reset all data</button>
   </div>
 </div>
@@ -588,12 +615,17 @@
   </div>
 </div>
 
+<audio id="bgMusic" preload="none" style="display:none;"></audio>
+
 <!-- ================= SESSION RUNNER ================= -->
 <div class="runner" id="runner">
   <div class="runner-top">
     <button class="icon-btn" id="runnerQuit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     <div class="mono" id="runnerCount" style="font-size:13px;color:var(--text-dim);">1 / 8</div>
-    <button class="icon-btn" id="runnerMute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path id="muteWave" d="M19 5a13 13 0 0 1 0 14M15 8a8 8 0 0 1 0 8"/></svg></button>
+    <div style="display:flex;gap:8px;">
+      <button class="icon-btn" id="runnerMusic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path id="musicNote" d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></button>
+      <button class="icon-btn" id="runnerMute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path id="muteWave" d="M19 5a13 13 0 0 1 0 14M15 8a8 8 0 0 1 0 8"/></svg></button>
+    </div>
   </div>
   <div class="runner-dots" id="runnerDots"></div>
   <div class="runner-body">
@@ -793,6 +825,9 @@ const BLUEPRINTS = [
   {id:'recoveryflow',name:'Recovery & Breathwork',cat:'recovery',desc:'Gentle, restful, nervous-system reset.',filter:e=>e.cat==='recovery'},
   {id:'balancelong',name:'Balance & Longevity',cat:'flex',desc:'Stability work that protects you for the long run.',filter:e=>e.balance===true},
   {id:'power',name:'Power & Athletic Conditioning',cat:'strength',desc:'Explosive bodyweight work for advanced movers.',filter:e=>e.level==='advanced'},
+  {id:'forgefunction',name:'Forge & Function',cat:'strength',celeb:true,desc:'Heavy compound lifts paired with functional power moves — inspired by training methods reported for Chris Hemsworth\'s superhero-role prep.',filter:e=>e.cat==='strength'&&(e.equip.includes('dumbbell')||e.equip.includes('kettlebell'))&&e.muscles.some(m=>['legs','glutes','back','hamstrings','full-body','power'].includes(m))},
+  {id:'ratio321',name:'3:2:1 Power Circuit',cat:'strength',celeb:true,desc:'A push–dip–pull ratio circuit (3 sets push-ups, 2 dips, 1 pull-up) — inspired by a training approach reported for Drake\'s workouts.',filter:e=>['pu-std','pu-incl','pu-wall','pu-dia','dip-chair','db-tricep','pullup','chinup','band-row','superman'].includes(e.id)},
+  {id:'longevityflow',name:'Longevity Flow',cat:'strength',celeb:true,desc:'Short functional strength plus stability work, kept well short of max effort — inspired by the not-to-failure, longevity-focused approach reported for Jennifer Aniston\'s current training. Typically done in about 20 minutes.',filter:e=>e.balance===true||(e.cat==='strength'&&e.level!=='advanced'&&e.muscles.some(m=>['core','glutes','legs','back','shoulders'].includes(m)))},
 ];
 
 /* =====================================================================
@@ -816,19 +851,166 @@ function todayKey(offset){offset=offset||0;const d=new Date();d.setDate(d.getDat
 function dateLabel(offset){const d=new Date();d.setDate(d.getDate()+offset);return d;}
 
 /* =====================================================================
-   AUDIO CUES
+   AUDIO CUES — beeps, spoken coaching, and generative background music
 ===================================================================== */
 let audioCtx=null;
+function getAudioCtx(){
+  audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  return audioCtx;
+}
 function beep(freq,dur,vol){
   if(profile && profile.sound===false) return;
   try{
-    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
-    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    const ctx=getAudioCtx();
+    const o=ctx.createOscillator(), g=ctx.createGain();
     o.type='sine'; o.frequency.value=freq;
     g.gain.value=(vol||0.05);
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(); o.stop(audioCtx.currentTime+(dur||0.15));
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime+(dur||0.15));
   }catch(e){}
+}
+
+/* -- Spoken coaching: "start X", "rest for Ns, next is Y" -- */
+function speak(text){
+  if(!text || !profile || profile.voice===false) return;
+  try{
+    if(!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.rate=1.02; u.pitch=1; u.volume=1;
+    const voices=window.speechSynthesis.getVoices();
+    const en=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith('en'));
+    if(en) u.voice=en;
+    duckMusicForSpeech(u);
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+function duckMusicForSpeech(utterance){
+  if(!musicPlaying) return;
+  const base=musicVolumeLevel();
+  if(usingCustomTrack()){
+    const el=document.getElementById('bgMusic');
+    if(el && !el.paused){ el.volume=base*0.3; utterance.onend=()=>{ el.volume=base; }; }
+  } else if(musicGain){
+    const ctx=getAudioCtx();
+    try{ musicGain.gain.linearRampToValueAtTime(base*0.3, ctx.currentTime+0.15); }catch(e){}
+    utterance.onend=()=>{ try{ musicGain.gain.linearRampToValueAtTime(base, getAudioCtx().currentTime+0.4); }catch(e){} };
+  }
+}
+function announceCurrent(){
+  if(!runnerState) return;
+  const {session,idx,phase}=runnerState;
+  const ex=session.exercises[idx];
+  const seg=ex.segment||'main';
+  const prevSeg = idx>0 ? (session.exercises[idx-1].segment||'main') : null;
+  if(phase==='work'){
+    let lead='';
+    if(idx===0) lead = seg==='warmup' ? "Let's warm up. " : "Let's begin. ";
+    else if(seg!==prevSeg){
+      if(seg==='main') lead='Warm-up done, nice work. Starting the workout. ';
+      else if(seg==='cooldown') lead='Great effort. Time to cool down. ';
+    }
+    speak(lead+'Start '+ex.name+'.');
+  } else if(ex.rest>0){
+    const next=session.exercises[idx+1];
+    speak(next ? `Rest for ${ex.rest} seconds. Next, ${next.name}.` : `Rest for ${ex.rest} seconds.`);
+  }
+}
+
+/* -- Music: either a fully generative in-browser beat (zero copyright risk, zero
+      network dependency), or tracks you've linked yourself — e.g. downloaded from
+      Pixabay Music and hosted alongside this file. -- */
+let musicPlaying=false, musicGain=null, musicTimer=null, musicBar=0, customTrackIdx=0;
+const MUSIC_BPM=122, MUSIC_BEAT=60/MUSIC_BPM;
+const MUSIC_BASSLINE=[110.00,110.00,146.83,130.81];
+function usingCustomTrack(){ return !!(profile && profile.musicSource==='custom' && profile.customTracks && profile.customTracks.length>0); }
+function musicVolumeLevel(){
+  if(profile && profile.musicVolume!=null) return profile.musicVolume;
+  return usingCustomTrack() ? 0.75 : 0.14;
+}
+function mKick(t){
+  const ctx=getAudioCtx(), o=ctx.createOscillator(), g=ctx.createGain();
+  o.type='sine'; o.frequency.setValueAtTime(120,t); o.frequency.exponentialRampToValueAtTime(48,t+0.12);
+  g.gain.setValueAtTime(0.9,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.18);
+  o.connect(g); g.connect(musicGain); o.start(t); o.stop(t+0.2);
+}
+function mHat(t,vol){
+  const ctx=getAudioCtx();
+  const buf=ctx.createBuffer(1,Math.floor(ctx.sampleRate*0.03),ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length);
+  const src=ctx.createBufferSource(); src.buffer=buf;
+  const filt=ctx.createBiquadFilter(); filt.type='highpass'; filt.frequency.value=6500;
+  const g=ctx.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.05);
+  src.connect(filt); filt.connect(g); g.connect(musicGain); src.start(t);
+}
+function mBass(t,freq){
+  const ctx=getAudioCtx(), o=ctx.createOscillator(), g=ctx.createGain();
+  o.type='triangle'; o.frequency.setValueAtTime(freq,t);
+  g.gain.setValueAtTime(0.001,t); g.gain.linearRampToValueAtTime(0.3,t+0.02); g.gain.exponentialRampToValueAtTime(0.001,t+MUSIC_BEAT*3.7);
+  o.connect(g); g.connect(musicGain); o.start(t); o.stop(t+MUSIC_BEAT*4);
+}
+function scheduleMusicBar(){
+  if(!musicPlaying||!musicGain) return;
+  const t0=getAudioCtx().currentTime+0.05;
+  for(let b=0;b<4;b++){
+    const t=t0+b*MUSIC_BEAT;
+    if(b===0||b===2) mKick(t);
+    mHat(t, b%2===0?0.15:0.22);
+    mHat(t+MUSIC_BEAT/2, 0.09);
+  }
+  mBass(t0, MUSIC_BASSLINE[musicBar%MUSIC_BASSLINE.length]);
+  musicBar++;
+}
+function startGeneratedMusic(){
+  if(musicPlaying) return;
+  try{
+    const ctx=getAudioCtx();
+    musicGain=ctx.createGain();
+    musicGain.gain.value=musicVolumeLevel();
+    musicGain.connect(ctx.destination);
+    musicPlaying=true; musicBar=0;
+    scheduleMusicBar();
+    musicTimer=setInterval(scheduleMusicBar, MUSIC_BEAT*4*1000);
+  }catch(e){}
+}
+function stopGeneratedMusic(){
+  if(musicTimer){ clearInterval(musicTimer); musicTimer=null; }
+  if(musicGain){
+    const g=musicGain; musicGain=null;
+    try{ g.gain.linearRampToValueAtTime(0, getAudioCtx().currentTime+0.3); }catch(e){}
+    setTimeout(()=>{ try{ g.disconnect(); }catch(e){} },400);
+  }
+}
+function playCustomTrack(){
+  const el=document.getElementById('bgMusic');
+  const tracks=(profile&&profile.customTracks)||[];
+  if(!el || tracks.length===0) return;
+  el.src=tracks[customTrackIdx].url;
+  el.volume=musicVolumeLevel();
+  el.loop=tracks.length===1;
+  el.onended = tracks.length>1 ? ()=>{ customTrackIdx=(customTrackIdx+1)%tracks.length; playCustomTrack(); } : null;
+  el.play().catch(()=>{ toast("Couldn't play that track — check the link, or switch to Generated beat in Settings."); });
+}
+function startCustomMusic(){
+  if(musicPlaying) return;
+  customTrackIdx=Math.floor(Math.random()*((profile.customTracks||[]).length));
+  musicPlaying=true;
+  playCustomTrack();
+}
+function stopCustomMusic(){
+  const el=document.getElementById('bgMusic');
+  if(el){ try{ el.pause(); el.onended=null; el.removeAttribute('src'); el.load(); }catch(e){} }
+}
+function startMusic(){
+  if(!profile || profile.music===false || musicPlaying) return;
+  if(usingCustomTrack()) startCustomMusic(); else startGeneratedMusic();
+}
+function stopMusic(){
+  musicPlaying=false;
+  stopGeneratedMusic();
+  stopCustomMusic();
 }
 
 /* =====================================================================
@@ -899,7 +1081,7 @@ function initOnboarding(){
   document.getElementById('onbFinish').addEventListener('click',()=>{
     const equip=['none'];
     document.querySelectorAll('#onbEquipOpts .opt-chip.active').forEach(b=>{if(b.dataset.eq!=='none') equip.push(b.dataset.eq);});
-    profile={level:tempProfile.level||'beginner',age:tempProfile.age||'adult',equipment:equip,sound:true,warmupCooldown:true};
+    profile={level:tempProfile.level||'beginner',age:tempProfile.age||'adult',equipment:equip,sound:true,voice:true,music:true,musicSource:'generated',customTracks:[],warmupCooldown:true};
     save(LS.profile,profile);
     document.getElementById('onbP3').classList.add('done');
     document.getElementById('onboarding').style.display='none';
@@ -965,9 +1147,28 @@ function assembleSession(name, bpId, durationMin, lvl, mainExercises){
     hasWarmup: includeWU
   };
 }
+function build321Circuit(durationMin, lvl){
+  const timing=timingFor(lvl);
+  function pickFirstAvailable(ids){
+    for(const id of ids){ const e=EX.find(x=>x.id===id); if(e && equipOk(e) && seniorSafe(e)) return e; }
+    return EX.find(x=>x.id===ids[ids.length-1]);
+  }
+  const pushEx=pickFirstAvailable(['pu-std','pu-incl','pu-wall','pu-dia']);
+  const dipEx=pickFirstAvailable(['dip-chair','db-tricep']);
+  const pullEx=pickFirstAvailable(['pullup','chinup','band-row','superman']);
+  const block=[pushEx,pushEx,pushEx,dipEx,dipEx,pullEx];
+  const cycleSecs=block.length*(timing.work+timing.rest);
+  const rounds=Math.max(1,Math.round((durationMin*60)/cycleSecs));
+  const mainExercises=[];
+  for(let r=0;r<rounds;r++){ block.forEach(e=>mainExercises.push({...e,work:timing.work,rest:timing.rest,segment:'main'})); }
+  return mainExercises;
+}
 function buildSessionFromBlueprint(bpId, durationMin){
   const bp=BLUEPRINTS.find(b=>b.id===bpId);
   const lvl=(profile&&profile.level)||'moderate';
+  if(bpId==='ratio321'){
+    return assembleSession(bp.name, bp.id, durationMin, lvl, build321Circuit(durationMin, lvl));
+  }
   let pool=poolFor(bp).filter(e=>levelOk(e,lvl));
   if(pool.length<4) pool=poolFor(bp); // fall back to full pool if too restrictive
   const timing=timingFor(lvl);
@@ -1043,7 +1244,10 @@ function renderToday(){
   }
   document.getElementById('heroDay').textContent=DAYS[now.getDay()].toUpperCase();
   document.getElementById('heroTitle').textContent=day.type==='rest'?'Rest day':day.name;
-  document.getElementById('heroDur').textContent= day.type==='rest' ? 'Recovery' : day.durationMin+' min';
+  const heroDurBtn=document.getElementById('heroDur');
+  heroDurBtn.textContent= day.type==='rest' ? 'Recovery' : day.durationMin+' min';
+  heroDurBtn.style.opacity = day.type==='rest' ? '.55' : '1';
+  heroDurBtn.style.cursor = day.type==='rest' ? 'default' : 'pointer';
   document.getElementById('heroLvl').textContent= (profile&&profile.level) ? profile.level[0].toUpperCase()+profile.level.slice(1) : 'Moderate';
   const eqCount=(profile&&profile.equipment||['none']).filter(e=>e!=='none').length;
   document.getElementById('heroEq').textContent = eqCount? eqCount+' tool'+(eqCount>1?'s':'') : 'No equipment';
@@ -1072,13 +1276,17 @@ function renderToday(){
   document.getElementById('todaySub').textContent = day.type==='rest' ? 'Scheduled recovery — light stretching is always welcome.' : 'Tap start when you\'re ready, or swap for something else.';
 
   // blueprint quickstart row
+  const celebRow=document.getElementById('celebRow');
+  celebRow.innerHTML = BLUEPRINTS.filter(bp=>bp.celeb).map(bp=>bpCardHTML(bp)).join('');
+  celebRow.querySelectorAll('.bp-card').forEach(c=>c.addEventListener('click',()=>openBlueprintSheet(c.dataset.id)));
   const row=document.getElementById('blueprintRow');
   row.innerHTML = BLUEPRINTS.map(bp=>bpCardHTML(bp)).join('');
   row.querySelectorAll('.bp-card').forEach(c=>c.addEventListener('click',()=>openBlueprintSheet(c.dataset.id)));
 }
 function bpCardHTML(bp){
   const meta=CAT_META[bp.cat]||CAT_META.strength;
-  return `<button class="bp-card" data-id="${bp.id}">
+  return `<button class="bp-card" data-id="${bp.id}" style="position:relative;">
+    ${bp.celeb?'<span style="position:absolute;top:10px;right:10px;font-size:14px;" title="Celebrity-inspired">⭐</span>':''}
     <div class="tag" style="background:var(--${meta.color}-dim);color:var(--${meta.color});"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${meta.icon}</svg></div>
     <h4>${bp.name}</h4>
     <div class="desc">${bp.desc}</div>
@@ -1103,6 +1311,9 @@ function renderLibrary(){
   document.querySelectorAll('#goalChips .fchip').forEach(b=>b.addEventListener('click',()=>{libFilters.goal=b.dataset.goal;renderLibrary();}));
   document.querySelectorAll('#levelChips .fchip').forEach(b=>b.addEventListener('click',()=>{libFilters.level=b.dataset.level;renderLibrary();}));
   document.querySelectorAll('#equipChips .fchip').forEach(b=>b.addEventListener('click',()=>{libFilters.equip=b.dataset.equip;renderLibrary();}));
+
+  document.getElementById('libCelebRow').innerHTML=BLUEPRINTS.filter(bp=>bp.celeb).map(bp=>bpCardHTML(bp)).join('');
+  document.getElementById('libCelebRow').querySelectorAll('.bp-card').forEach(c=>c.addEventListener('click',()=>openBlueprintSheet(c.dataset.id)));
 
   document.getElementById('libBlueprintRow').innerHTML=BLUEPRINTS.map(bp=>bpCardHTML(bp)).join('');
   document.getElementById('libBlueprintRow').querySelectorAll('.bp-card').forEach(c=>c.addEventListener('click',()=>openBlueprintSheet(c.dataset.id)));
@@ -1316,15 +1527,18 @@ function openBlueprintSheet(bpId, forDay){
   document.getElementById('bpDesc').textContent=bp.desc+` · ${poolFor(bp).length} exercises available with your equipment.`+wuNote;
   const durs=[10,15,20,30,45];
   const lvl=(profile&&profile.level)||'moderate';
-  currentBpDuration = lvl==='beginner'?15:lvl==='advanced'?30:20;
+  const today=todayKey(0);
+  const existingDur = (forDay && plan[forDay] && plan[forDay].bpId===bpId) ? plan[forDay].durationMin : null;
+  currentBpDuration = existingDur || (durs.includes(currentBpDuration)?currentBpDuration:(lvl==='beginner'?15:lvl==='advanced'?30:20));
   document.getElementById('bpDurations').innerHTML=durs.map(d=>`<button class="opt-chip ${d===currentBpDuration?'active':''}" data-dur="${d}">${d} min</button>`).join('');
   document.querySelectorAll('#bpDurations .opt-chip').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#bpDurations .opt-chip').forEach(x=>x.classList.remove('active'));
     b.classList.add('active'); currentBpDuration=parseInt(b.dataset.dur,10);
   }));
   const assignWrap=document.getElementById('bpAssign');
-  const today=todayKey(0);
-  assignWrap.innerHTML=`<button class="opt-chip active" data-assign="now">Start now</button><button class="opt-chip" data-assign="today">Today's plan</button>`;
+  const planLabel = forDay ? (forDay===today ? "Today's plan" : 'Save to '+DAYS[new Date(forDay+'T00:00:00').getDay()]) : "Today's plan";
+  const defaultToPlan = !!forDay;
+  assignWrap.innerHTML=`<button class="opt-chip ${defaultToPlan?'':'active'}" data-assign="now">Start now</button><button class="opt-chip ${defaultToPlan?'active':''}" data-assign="today">${planLabel}</button>`;
   assignWrap.querySelectorAll('.opt-chip').forEach(b=>b.addEventListener('click',()=>{
     assignWrap.querySelectorAll('.opt-chip').forEach(x=>x.classList.remove('active')); b.classList.add('active');
   }));
@@ -1333,13 +1547,13 @@ function openBlueprintSheet(bpId, forDay){
     const session=buildSessionFromBlueprint(currentBpId,currentBpDuration);
     if(mode==='now'){
       closeOverlay('bpOverlay');
-      startSession(session);
+      startSession(session, currentAssignKey);
     } else {
       const key = currentAssignKey || today;
       plan[key]={type:'blueprint',bpId:currentBpId,durationMin:currentBpDuration,name:BLUEPRINTS.find(b=>b.id===currentBpId).name,status:'pending'};
       save(LS.plan,plan);
       closeOverlay('bpOverlay'); closeOverlay('dayOverlay');
-      toast('Added to your plan.');
+      toast(currentBpDuration+' min · saved to '+(key===today?'today':DAYS[new Date(key+'T00:00:00').getDay()])+'.');
       renderAll();
     }
   };
@@ -1429,14 +1643,51 @@ function openSettings(){
   document.getElementById('setAge').innerHTML=AGE_INFO.map(a=>`<button class="opt-chip ${profile.age===a.id?'active':''}" data-age="${a.id}">${a.t}</button>`).join('');
   document.getElementById('setEquip').innerHTML=EQUIP_OPTS.map(e=>`<button class="opt-chip ${(profile.equipment||[]).includes(e)?'active':''}" data-eq="${e}">${EQUIP_LABELS[e]}</button>`).join('');
   document.getElementById('setWarmup').innerHTML=`<button class="opt-chip ${profile.warmupCooldown!==false?'active':''}" data-wu="on">Include (~9 min)</button><button class="opt-chip ${profile.warmupCooldown===false?'active':''}" data-wu="off">Skip it</button>`;
+  document.getElementById('setVoice').innerHTML=`<button class="opt-chip ${profile.voice!==false?'active':''}" data-voice="on">On</button><button class="opt-chip ${profile.voice===false?'active':''}" data-voice="off">Off</button>`;
+  document.getElementById('setMusic').innerHTML=`<button class="opt-chip ${profile.music!==false?'active':''}" data-music="on">On</button><button class="opt-chip ${profile.music===false?'active':''}" data-music="off">Off</button>`;
+  document.getElementById('setMusicSource').innerHTML=`<button class="opt-chip ${profile.musicSource!=='custom'?'active':''}" data-src="generated">Generated beat</button><button class="opt-chip ${profile.musicSource==='custom'?'active':''}" data-src="custom">My Pixabay tracks</button>`;
   document.getElementById('setSound').innerHTML=`<button class="opt-chip ${profile.sound!==false?'active':''}" data-snd="on">On</button><button class="opt-chip ${profile.sound===false?'active':''}" data-snd="off">Off</button>`;
   document.querySelectorAll('#setLevel .opt-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#setLevel .opt-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
   document.querySelectorAll('#setAge .opt-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#setAge .opt-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
   document.querySelectorAll('#setEquip .opt-chip').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.eq!=='none') b.classList.toggle('active'); }));
   document.querySelectorAll('#setWarmup .opt-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#setWarmup .opt-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
+  document.querySelectorAll('#setVoice .opt-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#setVoice .opt-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
+  document.querySelectorAll('#setMusic .opt-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#setMusic .opt-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
+  document.querySelectorAll('#setMusicSource .opt-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#setMusicSource .opt-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
   document.querySelectorAll('#setSound .opt-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#setSound .opt-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
+  renderTrackList();
   openOverlay('settingsOverlay');
 }
+function renderTrackList(){
+  const tracks=(profile&&profile.customTracks)||[];
+  const wrap=document.getElementById('trackList');
+  if(tracks.length===0){ wrap.innerHTML=`<div class="view-sub" style="margin-top:0;font-size:12px;">No tracks added yet.</div>`; return; }
+  wrap.innerHTML=tracks.map((t,i)=>`<div class="track-row"><span class="n">${t.name}</span><button data-remove="${i}" aria-label="Remove">✕</button></div>`).join('');
+  wrap.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',()=>{
+    profile.customTracks.splice(parseInt(b.dataset.remove,10),1);
+    save(LS.profile,profile);
+    renderTrackList();
+  }));
+}
+document.getElementById('addTrackBtn').addEventListener('click',()=>{
+  const input=document.getElementById('trackUrlInput');
+  const url=input.value.trim();
+  if(!url) return;
+  try{ new URL(url); }catch(e){ toast('That doesn\'t look like a valid link.'); return; }
+  let name=url.split('/').pop().split('?')[0] || url;
+  if(name.length>40) name=name.slice(0,37)+'…';
+  profile.customTracks = profile.customTracks || [];
+  profile.customTracks.push({url,name});
+  save(LS.profile,profile);
+  input.value='';
+  renderTrackList();
+  toast('Track added.');
+});
+document.getElementById('testSoundBtn').addEventListener('click',()=>{
+  beep(660,0.15,0.08);
+  speak('Sound is working.');
+  toast("Heard nothing? Open this file directly in your phone or computer's browser — in-chat previews often block audio.");
+});
 document.getElementById('settingsBtn').addEventListener('click',openSettings);
 document.getElementById('setSave').addEventListener('click',()=>{
   profile.level=document.querySelector('#setLevel .opt-chip.active').dataset.lvl;
@@ -1445,6 +1696,9 @@ document.getElementById('setSave').addEventListener('click',()=>{
   document.querySelectorAll('#setEquip .opt-chip.active').forEach(b=>{if(b.dataset.eq!=='none') equip.push(b.dataset.eq);});
   profile.equipment=equip;
   profile.warmupCooldown = document.querySelector('#setWarmup .opt-chip.active').dataset.wu==='on';
+  profile.voice = document.querySelector('#setVoice .opt-chip.active').dataset.voice==='on';
+  profile.music = document.querySelector('#setMusic .opt-chip.active').dataset.music==='on';
+  profile.musicSource = document.querySelector('#setMusicSource .opt-chip.active').dataset.src;
   profile.sound = document.querySelector('#setSound .opt-chip.active').dataset.snd==='on';
   save(LS.profile,profile);
   closeOverlay('settingsOverlay');
@@ -1469,6 +1723,12 @@ document.getElementById('startTodayBtn').addEventListener('click',()=>{
   startSession(session, key);
 });
 document.getElementById('swapTodayBtn').addEventListener('click',()=>openDayEditor(todayKey(0)));
+document.getElementById('heroDur').addEventListener('click',()=>{
+  const key=todayKey(0); const day=plan[key];
+  if(!day || day.type==='rest') return;
+  if(day.type==='blueprint' && day.bpId) openBlueprintSheet(day.bpId, key);
+  else openDayEditor(key);
+});
 document.getElementById('surpriseBtn').addEventListener('click',()=>{
   const bp=BLUEPRINTS[Math.floor(Math.random()*BLUEPRINTS.length)];
   const durs=[10,15,20];
@@ -1493,9 +1753,13 @@ function startSession(session, planKey){
   document.getElementById('completeWrap').classList.remove('show');
   buildRunnerDots();
   renderRunnerFrame();
+  document.getElementById('muteWave').style.opacity = (profile.sound===false||profile.voice===false) ? '0.25' : '1';
+  document.getElementById('runnerMusic').style.opacity = (profile && profile.music===false) ? '0.35' : '1';
   document.getElementById('runner').classList.add('show');
   clearInterval(runnerState.timerId);
   runnerState.timerId=setInterval(tickRunner,1000);
+  startMusic();
+  announceCurrent();
 }
 function buildRunnerDots(){
   const wrap=document.getElementById('runnerDots');
@@ -1570,6 +1834,7 @@ function advancePhase(){
     runnerState.phase='work'; runnerState.secsLeft=session.exercises[runnerState.idx].work;
   }
   renderRunnerFrame();
+  announceCurrent();
 }
 document.getElementById('runnerPause').addEventListener('click',()=>{
   runnerState.paused=!runnerState.paused;
@@ -1579,17 +1844,29 @@ document.getElementById('runnerPause').addEventListener('click',()=>{
 });
 document.getElementById('runnerSkip').addEventListener('click',()=>{ runnerState.secsLeft=1; tickRunner(); });
 document.getElementById('runnerPrev').addEventListener('click',()=>{
-  if(runnerState.idx>0){ runnerState.idx--; runnerState.phase='work'; runnerState.secsLeft=runnerState.session.exercises[runnerState.idx].work; renderRunnerFrame(); }
+  if(runnerState.idx>0){ runnerState.idx--; runnerState.phase='work'; runnerState.secsLeft=runnerState.session.exercises[runnerState.idx].work; renderRunnerFrame(); announceCurrent(); }
 });
 document.getElementById('runnerMute').addEventListener('click',()=>{
-  profile.sound = profile.sound===false ? true : false;
+  const turnOff = profile.sound!==false || profile.voice!==false;
+  profile.sound = !turnOff; profile.voice = !turnOff;
+  if(turnOff && 'speechSynthesis' in window){ try{window.speechSynthesis.cancel();}catch(e){} }
   save(LS.profile,profile);
-  document.getElementById('muteWave').style.opacity = profile.sound===false?'0.25':'1';
-  toast(profile.sound===false?'Sound off':'Sound on');
+  document.getElementById('muteWave').style.opacity = turnOff?'0.25':'1';
+  toast(turnOff?'Voice & beeps off':'Voice & beeps on');
+});
+document.getElementById('runnerMusic').addEventListener('click',()=>{
+  const turnOff = !profile || profile.music!==false;
+  profile.music = !turnOff;
+  save(LS.profile,profile);
+  document.getElementById('runnerMusic').style.opacity = turnOff?'0.35':'1';
+  if(turnOff) stopMusic(); else startMusic();
+  toast(turnOff?'Music off':'Music on');
 });
 document.getElementById('runnerQuit').addEventListener('click',()=>{
   if(runnerState.idx>0 && !confirm('End this session early? Progress so far will not be logged.')) return;
   clearInterval(runnerState.timerId);
+  if('speechSynthesis' in window){ try{window.speechSynthesis.cancel();}catch(e){} }
+  stopMusic();
   document.getElementById('runner').classList.remove('show');
   runnerState=null;
 });
@@ -1610,11 +1887,15 @@ function finishSession(){
   document.getElementById('cExercises').textContent=loggedCount;
   document.getElementById('cStreak').textContent=computeStreak();
   document.getElementById('completeWrap').classList.add('show');
+  stopMusic();
+  speak('Session complete — great work.');
   renderAll();
 }
 document.getElementById('completeClose').addEventListener('click',()=>{
   document.getElementById('completeWrap').classList.remove('show');
   document.getElementById('runner').classList.remove('show');
+  if('speechSynthesis' in window){ try{window.speechSynthesis.cancel();}catch(e){} }
+  stopMusic();
   runnerState=null;
 });
 
